@@ -24,6 +24,7 @@ public class Pokemon extends Card {
         this.type = type;
         this.weakness = weakness;
         this.resistance = resistance;
+        this.retreatCost = retreatCost;
         
         //Attack I
         this.atkCostI = atkCostI;
