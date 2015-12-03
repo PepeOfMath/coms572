@@ -1,20 +1,22 @@
+import cards.*;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 import java.util.ArrayList;
-import cards.*;
-import java.io.File;
 
-public final class Util {
+public class Test {
 
-    private Util() {
-        System.out.println("NOPE");
+    public static void main(String[] args) {
+        //Read in the database file, transform it into cards, insert into an array
+        if (args.length != 1) {
+            System.out.println("Need relative file path of card database");
+        } else {
+            //Card[] deck = readCardDatabase(args[0]);
+            //for( int i = 0; i < deck.length; i++ ) {
+            //    System.out.println(deck[i]);
+            //}
+        }
     }
-    
-    
-    //----------------------------Miscellaneous constants
-    public static final int NUM_ENERGY_TYPES = 4; //number of energy types currently supported (DPWC)
-    
-    
     
     /**
      * Creates an ArrayList<Card> of cards from the provided database
@@ -121,20 +123,12 @@ public final class Util {
         return energy;
     }
     
-    //Returns true if the available energy array has enough for the given attack cost
-    //Note that colorless energy acts like a wildcard (can be supplied by any other energy type)
-    public static boolean hasSufficientEnergy(int[] available, int[] cost) {
-        int excess = 0;
-        for (int i = 0; i < Util.NUM_ENERGY_TYPES-1; i++) {
-            if (available[i] < cost[i]) return false;
-            excess += (available[i] - cost[i]);
-        }
-        return ( available[Util.NUM_ENERGY_TYPES-1] + excess >= cost[Util.NUM_ENERGY_TYPES-1] );
-    }
-    
-    //Extract the number of copies of a particular card from a String of form <#>
     private static int getCount(String s) {
+        //Assumes we have something of the form <#>
         String ss = s.substring(1,s.length()-1);
         return Integer.parseInt(ss);
     }
+
 }
+
+

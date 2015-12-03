@@ -33,6 +33,8 @@ public class Main {
             //Create game state
             //Draw cards
             //Report back number of attempts before a valid hand was obtained
+            //Ask how many attempts the user had
+            //Draw extra cards if desired
             
             
             
