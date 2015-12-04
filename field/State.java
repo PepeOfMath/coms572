@@ -19,6 +19,7 @@ package field;
  */
  
 import java.util.ArrayList;
+import java.util.Collections;
 import cards.*;
 import util.*;
 
@@ -28,10 +29,62 @@ public class State {
 
     public Field playerOneF; //The human player, for now
     public Field playerTwoF; //The cpu player, for now
+    public int turnCount;
     
     public State(String p1DeckFile, String p2DeckFile) {
         playerOneF = new Field(p1DeckFile);
         playerTwoF = new Field(p2DeckFile);
+        turnCount = 0;
+    }
+    
+    public int initialDraw(boolean playerOne) {
+        Field f = playerOne ? playerOneF : playerTwoF;
+        int count = 0;
+        boolean contin = true;
+        while (contin) {
+            count++;
+            //shuffle deck
+            Collections.shuffle(f.deck);
+       
+            //look at last 7 cards for a basic pkmn
+            for (int i = f.deck.size() - 7; i < f.deck.size() && contin; i++) {
+                Card d = f.deck.get(i);
+                if (d instanceof Pokemon) {
+                    Pokemon p = (Pokemon)d;
+                    contin = !p.evolvesFrom.equalsIgnoreCase("Null");
+                    //If we have a basic pokemon, we are allowed to stop looping
+                    //else reloop and increment count
+                }
+            }
+        }
+        
+        //if there is >= 1, then draw cards into the hand
+        drawCardsToHand(playerOne, 7);
+        //draw prizes
+        drawCardsToPrizes(playerOne, 7);
+
+        return count;
+    }
+    
+    public int drawCardsToHand(boolean playerOne, int numCards) {
+        Field f = playerOne ? playerOneF : playerTwoF;
+        System.out.println("TODO: draw hand cards");
+        return 0;
+        //move numCards to hand
+        //remove those cards from the deck
+        //remove those cards from the unseenMe set
+        //return actual number of cards drawn
+    
+    }
+    
+    private int drawCardsToPrizes(boolean playerOne, int numCards) {
+        Field f = playerOne ? playerOneF : playerTwoF;
+        System.out.println("TODO: draw prize cards");
+        return 0;
+        //move numCards to prizes
+        //remove those cards from the deck
+        //return actual number of cards seen
+    
     }
 
 

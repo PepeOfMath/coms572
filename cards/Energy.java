@@ -1,9 +1,7 @@
 package cards;
 
 //Represents an Energy card
-//  Should be essentially done
 public class Energy extends Card {
-    
     
     public final Type eType;
     

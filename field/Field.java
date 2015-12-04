@@ -40,8 +40,17 @@ public class Field {
         prizes  = new ArrayList<Card>();
         discard = new ArrayList<Card>();
         
-        unseenMe= Util.readCardDatabase(deckFile);
-        unseenOp= Util.readCardDatabase(deckFile);
+        //unseenMe= Util.readCardDatabase(deckFile);
+        //unseenOp= Util.readCardDatabase(deckFile);
+        //Updated strategy means we only have one copy of the cards
+        unseenMe = new ArrayList<Card>(deck.size());
+        unseenOp = new ArrayList<Card>(deck.size());
+        for (int i = 0; i < deck.size(); i++) {
+            unseenMe.add(deck.get(i));
+            unseenOp.add(deck.get(i));
+        }
+        
+        
         
         deckCount = deck.size();
         handCount = 0;
