@@ -1,3 +1,5 @@
+package field;
+
 /** 
  * A class representing the State of the game, including:
  *      Human player deck count, hand count, and prize count
@@ -18,8 +20,22 @@
  
 import java.util.ArrayList;
 import cards.*;
+import util.*;
 
 public class State {
+
+
+
+    public Field playerOneF; //The human player, for now
+    public Field playerTwoF; //The cpu player, for now
+    
+    public State(String p1DeckFile, String p2DeckFile) {
+        playerOneF = new Field(p1DeckFile);
+        playerTwoF = new Field(p2DeckFile);
+    }
+
+
+    /*
     //Human
     public int hdeck;
     public int hhand;
@@ -72,7 +88,7 @@ public class State {
         //copy to shuffledDeck
         
         //draw 7 cards into the hand from the deck/shuffledDeck
-    }
+    }*/
 
 }
 
