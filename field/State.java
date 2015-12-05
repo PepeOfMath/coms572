@@ -138,6 +138,7 @@ public class State {
         return result;
     }
     
+    //Handle playing a new card from the hand
     public boolean playCard(boolean playerOne, String name, int slotNum) {
         Field f = playerOne ? playerOneF : playerTwoF;
         //get the card
@@ -145,9 +146,15 @@ public class State {
         if (c instanceof Energy) {
             return playEnergy(playerOne, name, slotNum);
         } else if (c instanceof Trainer) {
+            System.out.println("Handling Trainer by Discarding - No Effect");
+            Trainer t = (Trainer)f.findCardByName(name);
+            if (t.isSupporter && playedSupporter) return false; //Can't play two supporters
+            Effect e = t.cardEffect;
+            //If the effect is valid, then we discard the card, else don't
+            if (t.isSupporter) playedSupporter = true;
+            return f.playTrainer(t);
             //TODO handle trainer cards
             //Place the card correctly, and grab an Effect to deal with.  This could be complicated
-            return false;
         } else {//Pokemon Card
             if( ((Pokemon)c).evolvesFrom.equals("Null") ) { //Basic Pokemon
                 System.out.println("!!  Attempting to play " + name);
@@ -157,6 +164,48 @@ public class State {
                 return playEvolvPkmn(playerOne, name, slotNum);
             }
         }
+    }
+    
+    //Handle using an Attack
+    public boolean doAttack(boolean playerOne, int choice) {
+        Field f = playerOne ? playerOneF : playerTwoF;
+        Field f2= playerOne ? playerTwoF : playerOneF;
+        
+        Pokemon p = f.pkmnSlots[0].getPokemon();
+        //check for valid energy quantity.  If not enough, return false
+        boolean good = Util.hasSufficientEnergy( f.pkmnSlots[0].determineEnergy(), p.getAttackCost(choice) );
+        if (!good) {
+            System.out.println("Insufficient Energy for Attack");
+            return false;
+        }
+        if (f2.pkmnSlots[0] == null) {
+            System.out.println("Opponent has No Active Pokemon");
+            return false;
+        }
+        
+        //get the attack effect and name
+        System.out.println("Attacking with " + p.getAttackName(choice));
+        String[] effects = p.getAttackEffect(choice).split(",");
+        
+        //apply the attack effect.  This section might be pulled into another method
+        //to handle trainer card effects also
+        int damageDone = 0;
+        for (int i = 0; i < effects.length; i++) {
+            if (effects[i].startsWith("doDamage")) {
+                int amount = Integer.parseInt( effects[i].substring("doDamage".length()+1) );
+                damageDone += f2.pkmnSlots[0].applyDamage(amount, p.type);
+            } else if (effects[i].startsWith("healDamage")) {
+                String s = effects[i].substring("healDamage".length()+1);
+                int amount = (s.equals("EQ")) ? damageDone : Integer.parseInt(s);
+                f.pkmnSlots[0].healDamage(amount);
+            }
+        }
+        
+        //TODO monitor any results (aka, check if any pokemon fainted and handle that if needed)
+        System.out.println("TODO: check for fainted pokemon");
+        f.checkPokemon();
+        f2.checkPokemon();        
+        return true;
     }
     
     //Print out the hand for the specified user
@@ -184,7 +233,6 @@ public class State {
                 System.out.println("Bench" + i + ": " + playerOneF.pkmnSlots[i]);
             }
         }
-        //TODO: print the six Positions with information
         if(playerOne && showHand) {
             System.out.println("");
             System.out.println("Hand:");
@@ -206,7 +254,6 @@ public class State {
                 System.out.println("Bench" + i + ": " + playerTwoF.pkmnSlots[i]);
             }
         }
-        //TODO: print the six Positions with information
         if((!playerOne) && showHand) {
             System.out.println("");
             System.out.println("Hand:");

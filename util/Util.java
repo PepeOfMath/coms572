@@ -54,16 +54,26 @@ public final class Util {
                 int retreat = Integer.parseInt(scan.nextLine().trim());
                 
                 String atkI = scan.nextLine();
-                String[] atkIsplit = atkI.split(",");
-                int[] costI = determineCost(atkIsplit[0]);
+                int[] costI = determineCost(atkI.substring(0,atkI.indexOf(",")));
+                atkI = atkI.substring(atkI.indexOf(",")+1);
+                String atkIName = atkI.substring(0,atkI.indexOf(","));
+                atkI = atkI.substring(atkI.indexOf(",")+1);
+                
+                //String[] atkIsplit = atkI.split(",");
+                //int[] costI = determineCost(atkIsplit[0]);
                 
                 String atkII = scan.nextLine();
-                String[] atkIIsplit = atkII.split(",");
-                int[] costII = determineCost(atkIIsplit[0]);
+                int[] costII = determineCost(atkII.substring(0,atkII.indexOf(",")));
+                atkII = atkII.substring(atkII.indexOf(",")+1);
+                String atkIIName = atkII.substring(0,atkII.indexOf(","));
+                atkII = atkII.substring(atkII.indexOf(",")+1);
+                
+                //String[] atkIIsplit = atkII.split(",");
+                //int[] costII = determineCost(atkIIsplit[0]);
                 
                 for (int i = 0; i < count; i++) {
                     //deck[index] =
-                    deck.add(new Pokemon(name, evolvesFrom, hp, type, weakness, resistance, retreat, costI, atkIsplit[1], null, costII, atkIIsplit[1], null)); //TODO: define an actual effect
+                    deck.add(new Pokemon(name, evolvesFrom, hp, type, weakness, resistance, retreat, costI, atkIName, atkI, costII, atkIIName, atkII)); //TODO: define an actual effect
                     index++;
                 }
             

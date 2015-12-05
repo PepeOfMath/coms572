@@ -80,6 +80,28 @@ public class Position {
         return energy;
     }
     
+    //Apply damage. Return the actual amount done
+    public int applyDamage(int d, Type t) {
+        int damageToDo = d;
+        Pokemon p = getPokemon();
+        if (p.weakness == t) damageToDo *= 2;
+        if (p.resistance == t) damageToDo -= 20;
+        if (damageToDo <= 0) return 0;
+        if (damageToDo > (p.totalHP - damage)) damageToDo = p.totalHP - damage;
+        damage += damageToDo;
+        return damageToDo;
+    }
+    
+    public int healDamage(int d) {
+        if (damage <= d) {
+            d = damage;
+            damage = 0;
+        } else {
+            damage -= d;
+        }
+        return d;
+    }
+    
     public String energyString() {
         int[] list = determineEnergy();
         String text = "";

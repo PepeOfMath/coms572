@@ -7,8 +7,8 @@ Zweilous
 Dragon
 None
 3
-1D2C,Consume,40
-1P1D2C,Destructor Beam,90
+1D2C,Consume,doDamage:40
+1P1D2C,Destructor Beam,doDamage:90
 
 <3>
 Pokemon
@@ -19,8 +19,8 @@ Deino
 Dragon
 None
 3
-1C,Draw In,0
-1P1D1C,Dragon Headbutt,40
+1C,Draw In,doDamage:0
+1P1D1C,Dragon Headbutt,doDamage:40
 
 <4>
 Pokemon
@@ -31,8 +31,8 @@ Null
 Dragon
 None
 2
-1D,Guard Press,10
-1P2C,Headbutt,30
+1D,Guard Press,doDamage:10
+1P2C,Headbutt,doDamage:30
 
 <2>
 Pokemon
@@ -43,8 +43,8 @@ Whirlipede
 Psychic
 None
 2
-1P1C,Toxic Claws,30
-1P2C,Wild Horns,50
+1P1C,Toxic Claws,doDamage:30
+1P2C,Wild Horns,doDamage:50
 
 <3>
 Pokemon
@@ -55,8 +55,8 @@ Venipede
 Psychic
 None
 3
-1P,Venoshock,10
-3C,Steamroller,40
+1P,Venoshock,doDamage:10
+3C,Steamroller,doDamage:40
 
 <4>
 Pokemon
@@ -67,8 +67,8 @@ Null
 Psychic
 None
 2
-1P,Poison Sting,0
-2C,Tackle,20
+1P,Poison Sting,doDamage:0
+2C,Tackle,doDamage:20
 
 <1>
 Pokemon
@@ -79,8 +79,8 @@ Gothorita
 Psychic
 None
 2
-1P1C,Doom Decree,0
-1P2C,Black Magic,40
+1P1C,Doom Decree,doDamage:0
+1P2C,Black Magic,doDamage:40
 
 <2>
 Pokemon
@@ -91,8 +91,8 @@ Gothita
 Psychic
 None
 1
-1P,Hypnoblast,10
-1P2C,Mind Shock,40
+1P,Hypnoblast,doDamage:10
+1P2C,Mind Shock,doDamage:40
 
 <3>
 Pokemon
@@ -103,8 +103,8 @@ Null
 Psychic
 None
 1
-1P,Future Sight,0
-0,0,0
+1P,Future Sight,doDamage:0
+0,0,doDamage:0
 
 <1>
 Pokemon
@@ -115,8 +115,8 @@ Golett
 Dark
 None
 4
-1P2C,Devolution Punch,60
-2P2C,Ghost Hammer,90
+1P2C,Devolution Punch,doDamage:60
+2P2C,Ghost Hammer,doDamage:90
 
 <2>
 Pokemon
@@ -127,8 +127,8 @@ Null
 Dark
 None
 3
-2C,Nap,0
-1P2C,Pound,40
+2C,Nap,doDamage:0
+1P2C,Pound,doDamage:40
 
 <1>
 Pokemon
@@ -139,8 +139,8 @@ Null
 Fighting
 None
 1
-1C,Show Off,0
-2C,Psyshot,20
+1C,Show Off,doDamage:0
+2C,Psyshot,doDamage:20
 
 <2>
 Trainer

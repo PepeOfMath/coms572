@@ -14,10 +14,10 @@ public class Pokemon extends Card {
     public final int[] atkCostII;
     public final String atkNameI;
     public final String atkNameII;
-    public final Effect atkI;
-    public final Effect atkII;
+    public final String atkI;
+    public final String atkII;
     
-    public Pokemon(String name, String evolvesFrom, int totalHP, Type type, Type weakness, Type resistance, int retreatCost, int[] atkCostI, String atkNameI, Effect atkI, int[] atkCostII, String atkNameII, Effect atkII) {
+    public Pokemon(String name, String evolvesFrom, int totalHP, Type type, Type weakness, Type resistance, int retreatCost, int[] atkCostI, String atkNameI, String atkI, int[] atkCostII, String atkNameII, String atkII) {
         super(name);
         //this.name = name;
         this.evolvesFrom = evolvesFrom;
@@ -45,5 +45,17 @@ public class Pokemon extends Card {
     public boolean equals(Object o) {
         if(!(o instanceof Pokemon)) return false;
         return this.name.equals( ((Pokemon)o).name );
+    }
+    
+    public int[] getAttackCost(int choice) {
+        return (choice == 1) ? atkCostI : atkCostII;
+    }
+    
+    public String getAttackName(int choice) {
+        return (choice == 1) ? atkNameI : atkNameII;
+    }
+    
+    public String getAttackEffect(int choice) {
+        return (choice == 1) ? atkI : atkII;
     }
 }

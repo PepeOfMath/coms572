@@ -1,5 +1,6 @@
 package cards;
 
+import field.*;
 //A class to represent the effect of an attack or trainer card
 //  This may end up being very complicated, and will have to work with an effect processing routine
 //  However, the alternative is to write a separate class for each individual card, and
@@ -9,6 +10,7 @@ package cards;
 //actually be Actions
 public class Effect {
 
-
-
+    public boolean doEffect(State s) {
+        return true;
+    }
 }

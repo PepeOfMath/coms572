@@ -148,6 +148,17 @@ public class Field {
         return false;
     }
     
+    //Return true if the card is successfully played.  Note, this is essentially just 
+    //going to discard the Trainer card and return 
+    //TODO assumes this card is known to be in the hand
+    public boolean playTrainer(Trainer t) {
+        hand.remove(t);
+        unseenOp.remove(t);
+        discard.add(t);
+        handCount--;
+        return true;
+    }
+    
     //Play the desired energy if possible
     public boolean playEnergy(String name, int slotNum) {
         Energy e = (Energy)findCardByName(name);
@@ -165,5 +176,10 @@ public class Field {
             if( hand.get(i).name.equalsIgnoreCase(name) ) return hand.get(i);
         }
         return null;
+    }
+    
+    //Check for fainted pokemon, discard cards as needed, return number fainted
+    public int checkPokemon() {
+        return 0;
     }
 }

@@ -158,20 +158,26 @@ public class Main {
                         printBlock("Player " + (cpuPlayer ? 1 : 2) + " Wins!");
                     }
                 } else if(cmd.startsWith("attack")) {
-                    printBlock("Attacking!");
-                    //TODO Handle attack
-                    
-                    //Toggle Player control
-                    cpuPlayer = !cpuPlayer;
-                    //TODO Handle between turn effects (status effects)
-                    
-                    //Begin next player's turn
-                    game.resetSwitches(cpuPlayer);
-                    int ncard = game.drawCardsToHand(!cpuPlayer, 1);
-                    if (ncard == 0) { //The current player loses, and the game ends
-                        contin = false;
-                        printBlock("Player " + (cpuPlayer ? 1 : 2) + " Wins!");
+                    //Single parameter {1 or 2} to decide which attack is used
+                    int choice = Integer.parseInt( cmd.substring("attack".length()).trim() );
+                    if( game.doAttack(!cpuPlayer, choice) ) {//TODO Handle fainting
+                        printBlock("Attack Successful - Ending Turn");
+                        
+                        //Toggle Player control
+                        cpuPlayer = !cpuPlayer;
+                        //TODO Handle between turn effects (status effects)
+                        
+                        //Begin next player's turn
+                        game.resetSwitches(cpuPlayer);
+                        int ncard = game.drawCardsToHand(!cpuPlayer, 1);
+                        if (ncard == 0) { //The current player loses, and the game ends
+                            contin = false;
+                            printBlock("Player " + (cpuPlayer ? 1 : 2) + " Wins!");
+                        }
+                    } else {
+                        printBlock("Invalid Attack");
                     }
+                    
                 } else if(cmd.startsWith("switch")) {
                     //Extract a numerical parameter between 1-5 indicating the position to switch to
                     int slotNum = Integer.parseInt( cmd.substring("switch".length()).trim() );
@@ -181,7 +187,6 @@ public class Main {
                         printBlock("Invalid Switch");
                     }
                 } else if(cmd.startsWith("play")) {
-                    printBlock("Playing a Card");
                     //Extract the number parameter
                     //Extract the card name
                     String trimmed = cmd.substring("play".length()).trim();
@@ -193,8 +198,6 @@ public class Main {
                     } else {
                         printBlock("Invalid Play");
                     }
-                    
-                    //TODO handle card stuff
                 } else {
                     printBlock("Unrecognized Command");
                 }
