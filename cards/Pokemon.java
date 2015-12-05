@@ -3,7 +3,7 @@ package cards;
 //Represents the characteristics of a single 'Pokemon' card
 public class Pokemon extends Card {
     
-    public final String name;
+    //public final String name;
     public final String evolvesFrom;
     public final int totalHP;
     public final Type type;
@@ -18,7 +18,8 @@ public class Pokemon extends Card {
     public final Effect atkII;
     
     public Pokemon(String name, String evolvesFrom, int totalHP, Type type, Type weakness, Type resistance, int retreatCost, int[] atkCostI, String atkNameI, Effect atkI, int[] atkCostII, String atkNameII, Effect atkII) {
-        this.name = name;
+        super(name);
+        //this.name = name;
         this.evolvesFrom = evolvesFrom;
         this.totalHP = totalHP;
         this.type = type;
@@ -39,5 +40,10 @@ public class Pokemon extends Card {
     
     public String toString() {
         return name;
+    }
+    
+    public boolean equals(Object o) {
+        if(!(o instanceof Pokemon)) return false;
+        return this.name.equals( ((Pokemon)o).name );
     }
 }

@@ -47,9 +47,9 @@ public class Main {
             //     restart at step *
             printBlock("Drawing Hands");
             printBlock("CPU draw");
-            int cpuTries = game.initialDraw(true);
+            int cpuTries = game.initialDraw(false);
             printBlock("Hu draw");
-            int humTries = game.initialDraw(false);
+            int humTries = game.initialDraw(true); //Human is player 1
             if (cpuTries > humTries) {
                 //TODO: CPU may take bonus cards (low priority)
                 printBlock("TODO: CPU may take bonus cards");
@@ -59,7 +59,52 @@ public class Main {
             }
             
             //TODO (high priority)
-            printBlock("Choose Basic Pokemon To Begin");
+            //Idea: probably use heuristics here to choose 1-3 starting pokemon based on the hand
+            printBlock("Player 1: Choose Basic Pokemon To Begin");
+            printBlock("Enter one Pokemon Name at a Time; Use \"done\" to finish");
+            game.printHand(true);
+            String toPlay = "";
+            boolean canEnd = false;
+            while(!toPlay.toLowerCase().equals("done")) {
+                prompt(false);
+                while(!s.hasNextLine());
+                toPlay = s.nextLine().trim();
+                //interpret and attempt to play cards
+                boolean success = game.playBasicPkmn(true, toPlay);
+                if(success) {
+                    canEnd = true;
+                } else if (!canEnd || !toPlay.toLowerCase().equals("done")) {
+                    toPlay = "";
+                    printBlock("Invalid Choice - No Card Played");
+                }
+            }
+            
+
+            if(cpuControl) {
+                printBlock("Player 2: Choose Basic Pokemon To Begin");
+                printBlock("Enter one Pokemon Name at a Time; Use \"done\" to finish");
+                game.printHand(false);
+                toPlay = "";
+                canEnd = false;
+                while(!toPlay.toLowerCase().equals("done")) {
+                    prompt(true);
+                    while(!s.hasNextLine());
+                    toPlay = s.nextLine().trim();
+                    //interpret and attempt to play cards
+                    boolean success = game.playBasicPkmn(false, toPlay);
+                    if(success) {
+                        canEnd = true;
+                    } else if (!canEnd || !toPlay.toLowerCase().equals("done")) {
+                        toPlay = "";
+                        printBlock("Invalid Choice - No Card Played");
+                    }
+                }
+            } else {
+                //TODO have user (or AI) choose pokemon for player 2
+                printBlock("TODO: AI Selects Basic Pokemon");
+            }
+            
+            
             
             
             //Loop for commands
@@ -78,9 +123,12 @@ public class Main {
                  *   "play ..."     play a card (TODO exact syntax)
                  */
                 //TODO: maybe print game state before each action
-            
+                printBlock("CURRENT GAME STATE");
+                game.printState(!cpuPlayer, !cpuPlayer || cpuControl);
+                
+                
                 prompt(cpuPlayer);
-                if (cpuPlayer && cpuControl) {
+                if (cpuPlayer && !cpuControl) {
                     //TODO (high priority) have AI choose an action
                     printBlock("TODO: ask AI for action");
                     cmd = "end turn";

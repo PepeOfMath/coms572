@@ -66,4 +66,28 @@ public class Position {
         
         return energy;
     }
+    
+    public String energyString() {
+        int[] list = determineEnergy();
+        String text = "";
+        if (list[0] != 0) text += list[0] + "D";
+        if (list[1] != 0) text += list[1] + "P";
+        if (list[2] != 0) text += list[2] + "W";
+        if (text.equals("")) return "-";
+        return text;
+    }
+    
+    // Return a string describing the pokemon in this slot
+    public String toString() {
+        String text = "";
+        Pokemon p = getPokemon();
+        text += p.name;
+        text = String.format("%1$-" + 12 + "s", text);
+        text += energyString();
+        text = String.format("%1$-" + 20 + "s", text);
+        text += (p.totalHP - damage) + "/" + p.totalHP;
+        text = String.format("%1$-" + 30 + "s", text);
+        text += stat;
+        return text;
+    }
 }

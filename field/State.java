@@ -61,87 +61,110 @@ public class State {
         //if there is >= 1, then draw cards into the hand
         drawCardsToHand(playerOne, 7);
         //draw prizes
-        drawCardsToPrizes(playerOne, 7);
+        drawCardsToPrizes(playerOne);
 
         return count;
     }
     
+    //Move cards from deck to hand, return the actual number of cards moved
+    //Should be used for initial draw as well as usual draws
+    //Not for hypothetical draw!!
     public int drawCardsToHand(boolean playerOne, int numCards) {
         Field f = playerOne ? playerOneF : playerTwoF;
-        System.out.println("TODO: draw hand cards");
-        return 0;
-        //move numCards to hand
-        //remove those cards from the deck
-        //remove those cards from the unseenMe set
-        //return actual number of cards drawn
-    
+        boolean tmp;
+        for(int i = 0; i < numCards; i++) {
+            tmp = f.drawCardToHand();
+            if (!tmp) return i;
+        }
+        return numCards;
     }
     
-    private int drawCardsToPrizes(boolean playerOne, int numCards) {
+    //Set up the prize cards.  Nothing is returned because this should never fail
+    private void drawCardsToPrizes(boolean playerOne) {
         Field f = playerOne ? playerOneF : playerTwoF;
-        System.out.println("TODO: draw prize cards");
-        return 0;
-        //move numCards to prizes
-        //remove those cards from the deck
-        //return actual number of cards seen
+        f.drawPrizeCards();
+    }
     
+    //Search the hand to see if there is a card with the given name
+    public boolean hasCardInHand(boolean playerOne, String name) {
+        Field f = playerOne ? playerOneF : playerTwoF;
+        return f.hasCardInHand(name);
+    }
+    
+    //Find out if the card in hand is a basic pokemon
+    public boolean isCardInHandBasicPkmn(boolean playerOne, String name) {
+        Field f = playerOne ? playerOneF : playerTwoF;
+        return f.isCardInHandBasicPkmn(name);
+    }
+    
+    //Try to play a basic pokemon (has checks for valid move built in)
+    public boolean playBasicPkmn(boolean playerOne, String name) {
+        Field f = playerOne ? playerOneF : playerTwoF;
+        boolean test = f.isCardInHandBasicPkmn(name);
+        if (!test) return false; //Not a basic pokemon or not in hand
+        return f.playBasicPkmn(name, turnCount);
+    }
+    
+    //Print out the hand for the specified user
+    public void printHand(boolean playerOne) {
+        Field f = playerOne ? playerOneF : playerTwoF;
+        System.out.println(playerOne ? "Player 1 Hand" : "Player 2 Hand");
+        for (int i = 0; i < f.hand.size(); i++) {
+            System.out.println(f.hand.get(i));
+        }
+    }
+    
+    //Print to command line: a representation of the current state
+    //2nd parameter indicates whether to print the player's hand
+    public void printState(boolean playerOne, boolean showHand) {
+        //Player One Information
+        System.out.println("");
+        System.out.println("Player 1");
+        System.out.println("-----------------------------------------");
+        System.out.println("Deck: " + playerOneF.deckCount + "  Hand: " + playerOneF.handCount + "  Prize: " + playerOneF.prizeCount + "  Discard: " + playerOneF.discard.size());
+        System.out.println("Field:");
+        for (int i = 0; i < playerOneF.pkmnSlots.length; i++) {
+            if (i == 0) {
+                System.out.println("Active: " + playerOneF.pkmnSlots[i]);
+            } else {
+                System.out.println("Bench" + i + ": " + playerOneF.pkmnSlots[i]);
+            }
+        }
+        //TODO: print the six Positions with information
+        if(playerOne && showHand) {
+            System.out.println("");
+            System.out.println("Hand:");
+            for (int i = 0; i < playerOneF.hand.size(); i++) {
+                System.out.println(playerOneF.hand.get(i));
+            }
+        }
+        
+        //Player Two Information
+        System.out.println("");
+        System.out.println("Player 2");
+        System.out.println("-----------------------------------------");
+        System.out.println("Deck: " + playerTwoF.deckCount + "  Hand: " + playerTwoF.handCount + "  Prize: " + playerTwoF.prizeCount + "  Discard: " + playerTwoF.discard.size());
+        System.out.println("Field:");
+        for (int i = 0; i < playerTwoF.pkmnSlots.length; i++) {
+            if (i == 0) {
+                System.out.println("Active: " + playerTwoF.pkmnSlots[i]);
+            } else {
+                System.out.println("Bench" + i + ": " + playerTwoF.pkmnSlots[i]);
+            }
+        }
+        //TODO: print the six Positions with information
+        if((!playerOne) && showHand) {
+            System.out.println("");
+            System.out.println("Hand:");
+            for (int i = 0; i < playerTwoF.hand.size(); i++) {
+                System.out.println(playerTwoF.hand.get(i));
+            }
+        }
+        
+        System.out.println("");
     }
 
 
-    /*
-    //Human
-    public int hdeck;
-    public int hhand;
-    public int hprizes;
-    
-    //datastructures
-    public ArrayList<Card> hunseen;
-    public ArrayList<Card> hdiscard;
-    //in-play stuff
-    public Position[] hInPlay;
-    
-    //CPU
-    public int cdeck;
-    public int chand;
-    public int cprizes;
-    
-    //datastructures
-    public ArrayList<Card> cunseen;
-    public ArrayList<Card> chandCards;
-    public ArrayList<Card> cdiscard;
-    public ArrayList<Card> cprizesCards;
-    public ArrayList<Card> shuffledDeck; //Should not be visible generally
-    //in-play stuff
-    public Position[] cpuInPlay;
-    
-    
-    
-    public State(String playerDeckFile, String cpuDeckFile) {
-        //Human player side
-        hprizes = 6;
-        hhand = 7;
-        hdeck = 60 - hhand - hprizes;
-        
-        hdiscard = new ArrayList<Card>();
-        hunseen = Util.readCardDatabase(playerDeckFile);
-        //initialize the unseen cards with the whole deck
-        
-        //CPU player side
-        cprizes = 6;
-        chand = 7;
-        cdeck = 60 - chand - cprizes;
-        
-        //get the deck
-        cdiscard = new ArrayList<Card>();
-        chandCards = new ArrayList<Card>();
-        cprizesCards = new ArrayList<Card>();
-        cunseen = Util.readCardDatabase(cpuDeckFile);
-        shuffledDeck = Util.readCardDatabase(cpuDeckFile);
-        //intialize the unseen cards with the whole deck
-        //copy to shuffledDeck
-        
-        //draw 7 cards into the hand from the deck/shuffledDeck
-    }*/
-
+  
 }
 
