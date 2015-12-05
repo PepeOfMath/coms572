@@ -7,7 +7,7 @@ Zweilous
 Dragon
 None
 3
-1D2C,Consume,doDamage:40
+1D2C,Consume,doDamage:40,healDamage:EQ
 1P1D2C,Destructor Beam,doDamage:90
 
 <3>
@@ -127,7 +127,7 @@ Null
 Dark
 None
 3
-2C,Nap,doDamage:0
+2C,Nap,healDamage:40
 1P2C,Pound,doDamage:40
 
 <1>

@@ -15,7 +15,9 @@ public final class Util {
     
     //----------------------------Miscellaneous constants
     public static final int NUM_ENERGY_TYPES = 4; //number of energy types currently supported (DPWC)
-    
+    public static final int PLAYER_ONE_WIN = 1;
+    public static final int PLAYER_TWO_WIN = 2;
+    public static final int GAME_DRAW = 3;
     
     
     /**

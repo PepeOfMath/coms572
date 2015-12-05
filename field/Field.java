@@ -3,6 +3,7 @@ package field;
 import cards.*;
 import java.util.ArrayList;
 import util.Util;
+import java.util.Random;
 
 /**
  * Represents one side of the game field, including hand, deck, etc.
@@ -126,6 +127,7 @@ public class Field {
                 hand.remove(p);
                 unseenOp.remove(p);
                 handCount--;
+                pkmnCount++;
                 return true;
             }
         }   
@@ -180,6 +182,60 @@ public class Field {
     
     //Check for fainted pokemon, discard cards as needed, return number fainted
     public int checkPokemon() {
-        return 0;
+        int count = 0;
+        for (int i = 0; i < pkmnSlots.length; i++) {
+            if(pkmnSlots[i] != null && pkmnSlots[i].isFaintedPokemon() ) {
+                count++;
+                //Remove the Pokemon
+                Pokemon p = pkmnSlots[i].removeTopPokemon();
+                while(p != null) {
+                    discard.add(p);
+                    p = pkmnSlots[i].removeTopPokemon();
+                }
+                Energy e = pkmnSlots[i].removeLastEnergy();
+                while(e != null) {
+                    discard.add(e);
+                    e = pkmnSlots[i].removeLastEnergy();
+                }
+                pkmnSlots[i] = null;
+                pkmnCount--;
+            }
+        }
+        return count;
+    }
+    
+    //Draw a number of prize cards into the hand
+    public int drawPrizes(int rewards) {
+        for (int i = 0; i < rewards; i++) {
+            if (prizes.size() == 0) return i;
+            hand.add( prizes.remove( prizes.size()-1 ) );
+            handCount++;
+            prizeCount--;
+        }
+        return rewards;
+    }
+    
+    //Return true if there is currently a Pokemon in Position 0
+    public boolean hasActivePokemon() {
+        return !(pkmnSlots[0] == null);
+    }
+    
+    //If there is no currently active Pokemon, a new one is chosen at random
+    public boolean chooseRandomActivePkmn() {
+        if(hasActivePokemon()) return true;
+        Random r = new Random();
+        int j = (pkmnCount==0) ? -1 : r.nextInt(pkmnCount);
+        for (int i = 1; i < pkmnSlots.length; i++) {
+            if(pkmnSlots[i] != null) {
+                if(j==0) {
+                    pkmnSlots[0] = pkmnSlots[i];
+                    pkmnSlots[i] = null;
+                    return true;
+                }
+                j--;
+                
+            }
+        }
+        return false;
     }
 }

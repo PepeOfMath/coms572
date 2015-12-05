@@ -201,11 +201,43 @@ public class State {
             }
         }
         
-        //TODO monitor any results (aka, check if any pokemon fainted and handle that if needed)
-        System.out.println("TODO: check for fainted pokemon");
-        f.checkPokemon();
-        f2.checkPokemon();        
+        //Fainting Results are handled separately (see the method below)
         return true;
+    }
+    
+    //Each player checks for fainted pokemon, discards those, replaces the active pokemon randomly,
+    //and reports back the number of faints.  Each player then draws prize cards.  This method returns
+    //a number indicating if either player has won: 0 (no winner yet), 1 (player 1), 2 (player two),
+    // 3 (draw)
+    public int checkPokemon() {
+        Field f = playerOneF;
+        Field f2 = playerTwoF;
+        
+        //Check Field for fainted Pokemon, Discard, Return Count
+        int faint1 = f.checkPokemon();
+        int faint2 = f2.checkPokemon();
+        
+        //Draw Prize Cards
+        int prize1 = f.drawPrizes(faint2);
+        int prize2 = f2.drawPrizes(faint1);
+        
+        //If No Active Pokemon, Attempt to Replace
+        boolean hasActive1 = true;
+        boolean hasActive2 = true;
+        if (!f.hasActivePokemon()) {
+            System.out.println("Replacing Active Pokemon Randomly");
+            hasActive1 = f.chooseRandomActivePkmn();
+        }
+        if (!f2.hasActivePokemon()) {
+            System.out.println("Replacing Active Pokemon Randomly");
+            hasActive2 = f2.chooseRandomActivePkmn();
+        }
+        
+        int pOneWin = (f.prizeCount == 0 || !hasActive2) ? 1 : 0;
+        int pTwoWin = (f2.prizeCount == 0 || !hasActive1) ? 2 : 0;
+        //If Eiher Player has No Active Pokemon or No Prizes, we can declare End of Game (interpret)
+        return pOneWin + pTwoWin;
+    
     }
     
     //Print out the hand for the specified user

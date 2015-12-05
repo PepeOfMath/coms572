@@ -60,6 +60,17 @@ public class Position {
         return en.remove(r.nextInt(en.size()));
     }
     
+    //Removes the top level Pokemon Card and returns it
+    public Pokemon removeTopPokemon() {
+        if (pkmn.size() == 0) return null;
+        return pkmn.remove(pkmn.size()-1);
+    }
+    
+    public Energy removeLastEnergy() {
+        if (en.size() == 0) return null;
+        return en.remove(en.size()-1);
+    }
+    
     //Return an array of energy counts in the same format as Util determines costs
     public int[] determineEnergy() {
         int[] energy = new int[Util.NUM_ENERGY_TYPES];
@@ -92,6 +103,7 @@ public class Position {
         return damageToDo;
     }
     
+    //Heal damage.  Return the actual amount healed
     public int healDamage(int d) {
         if (damage <= d) {
             d = damage;
@@ -100,6 +112,11 @@ public class Position {
             damage -= d;
         }
         return d;
+    }
+    
+    //Return true if the Pokemon in this Position has fainted (has at least as much damage as HP)
+    public boolean isFaintedPokemon() {
+        return (damage >= getPokemon().totalHP);
     }
     
     public String energyString() {

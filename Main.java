@@ -2,6 +2,7 @@
 
 import java.util.Scanner;
 import field.*;
+import util.*;
 
 public class Main {
     
@@ -160,8 +161,8 @@ public class Main {
                 } else if(cmd.startsWith("attack")) {
                     //Single parameter {1 or 2} to decide which attack is used
                     int choice = Integer.parseInt( cmd.substring("attack".length()).trim() );
-                    if( game.doAttack(!cpuPlayer, choice) ) {//TODO Handle fainting
-                        printBlock("Attack Successful - Ending Turn");
+                    if( game.doAttack(!cpuPlayer, choice) ) {
+                        contin = evaluateCheckPokemon( game.checkPokemon() );
                         
                         //Toggle Player control
                         cpuPlayer = !cpuPlayer;
@@ -219,6 +220,22 @@ public class Main {
                 return;
             }
         }
+    }
+    
+    //Return true if the result indicates that the game should continue
+    //Also print any relevant messages
+    public static boolean evaluateCheckPokemon(int result) {
+        if (result == Util.PLAYER_ONE_WIN) {
+            printBlock("Player 1 Wins!");
+            return false;
+        } else if (result == Util.PLAYER_TWO_WIN) {
+            printBlock("Player 2 Wins!");
+            return false;
+        } else if (result == Util.GAME_DRAW) {
+            printBlock("Game Ends in a Draw");
+            return false;
+        }
+        return true;
     }
     
     public static void prompt(boolean cpuPlayer) {
