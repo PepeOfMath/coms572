@@ -30,6 +30,7 @@ public class State {
     public Field playerOneF; //The human player, for now
     public Field playerTwoF; //The cpu player, for now
     public int turnCount;
+    private boolean toIncrement; //Used to increment turnCount only every other turn
     public boolean playedEnergy; //Three toggles which should reset on each turn
     public boolean playedSupporter;
     public boolean performedSwitch;
@@ -38,6 +39,7 @@ public class State {
         playerOneF = new Field(p1DeckFile);
         playerTwoF = new Field(p2DeckFile);
         turnCount = 0;
+        toIncrement = false;
         
         playedEnergy = false;
         playedSupporter = false;
@@ -114,8 +116,8 @@ public class State {
     
     //Handle play of an evolution Pokemon 
     public boolean playEvolvPkmn(boolean playerOne, String name, int slotNum) {
-        //TODO
-        return false;
+        Field f = playerOne ? playerOneF : playerTwoF;
+        return f.playEvolvPkmn(name, slotNum);
     }
     
     //Try to play an Energy card
@@ -131,7 +133,9 @@ public class State {
     public boolean doSwitch(boolean playerOne, int slotNum) {
         if (performedSwitch) return false; //Cannot switch twice
         Field f = playerOne ? playerOneF : playerTwoF;
-        return f.doSwitch(slotNum);
+        boolean result = f.doSwitch(slotNum);
+        performedSwitch = result;
+        return result;
     }
     
     public boolean playCard(boolean playerOne, String name, int slotNum) {
@@ -142,17 +146,17 @@ public class State {
             return playEnergy(playerOne, name, slotNum);
         } else if (c instanceof Trainer) {
             //TODO handle trainer cards
+            //Place the card correctly, and grab an Effect to deal with.  This could be complicated
             return false;
         } else {//Pokemon Card
             if( ((Pokemon)c).evolvesFrom.equals("Null") ) { //Basic Pokemon
+                System.out.println("!!  Attempting to play " + name);
                 return playBasicPkmn(playerOne, name);
             } else { //Attempt to do an Evolution at the given slot
+                System.out.println("!!  Attempting to evolve to " + name);
                 return playEvolvPkmn(playerOne, name, slotNum);
             }
         }
-        //Pass control to the appropriate Field in order to place the card correctly
-        //May have some effects to handle with the whole state, however so we need to return 
-        //a card effect TODO.  This means an invalid play would have to throw an exception
     }
     
     //Print out the hand for the specified user
@@ -215,7 +219,9 @@ public class State {
     }
 
     //Reset the set of switch variables
-    public void resetSwitches() {
+    public void resetSwitches(boolean playerOne) {
+        Field f = playerOne ? playerOneF : playerTwoF;
+        f.turnCount++;
         playedEnergy = false;
         playedSupporter = false;
         performedSwitch = false;

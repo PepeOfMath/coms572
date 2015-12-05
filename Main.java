@@ -151,7 +151,7 @@ public class Main {
                     //TODO Handle between turn effects (status effects)
                     
                     //Begin next player's turn
-                    game.resetSwitches();
+                    game.resetSwitches(cpuPlayer);
                     int ncard = game.drawCardsToHand(!cpuPlayer, 1);
                     if (ncard == 0) { //The current player loses, and the game ends
                         contin = false;
@@ -166,7 +166,7 @@ public class Main {
                     //TODO Handle between turn effects (status effects)
                     
                     //Begin next player's turn
-                    game.resetSwitches();
+                    game.resetSwitches(cpuPlayer);
                     int ncard = game.drawCardsToHand(!cpuPlayer, 1);
                     if (ncard == 0) { //The current player loses, and the game ends
                         contin = false;

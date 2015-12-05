@@ -15,7 +15,7 @@ public class Field {
     public int pkmnCount;
     
     public Position[] pkmnSlots;
-    
+    public int turnCount;
     
     public ArrayList<Card> deck;
     public ArrayList<Card> hand;
@@ -50,7 +50,7 @@ public class Field {
             unseenOp.add(deck.get(i));
         }
         
-        
+        turnCount = 0;
         
         deckCount = deck.size();
         handCount = 0;
@@ -130,6 +130,22 @@ public class Field {
             }
         }   
         return false; //No space available to play another basic pokemon
+    }
+    
+    //Return true if the card is successfully used to evolve a Pokemon
+    //TODO: assumes this is a valid Evolved Pokemon to play
+    public boolean playEvolvPkmn(String name, int slotNum) {
+        if(pkmnSlots[slotNum] == null) return false; //No Pokemon to Evolve
+        Pokemon p = (Pokemon)findCardByName(name);
+        System.out.println(p);
+        boolean result = pkmnSlots[slotNum].evolveWith(p, turnCount);
+        if (result) {
+            hand.remove(p);
+            unseenOp.remove(p);
+            handCount--;
+            return true;
+        }
+        return false;
     }
     
     //Play the desired energy if possible
