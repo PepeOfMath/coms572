@@ -3,6 +3,7 @@ package field;
 import cards.*;
 import util.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Position {
     
@@ -13,6 +14,7 @@ public class Position {
     public Status stat;
     public int turnPlayed;
     int damage;
+    Random r;
 
 
     public Position(Pokemon p, int turnNumber) {
@@ -26,11 +28,16 @@ public class Position {
         stat = Status.NORMAL;
         turnPlayed = turnNumber;
         damage = 0;
+        r = new Random();
     }
     
     //Get the active (highest evolution) Pokemon in this position
     public Pokemon getPokemon() {
         return pkmn.get(pkmn.size()-1);
+    }
+    
+    public int getEnergyCount() {
+        return en.size();
     }
 
     //Attempt to evolve the Pokemon in this position
@@ -45,6 +52,10 @@ public class Position {
     public boolean addEnergy(Energy e) {
         en.add(e);
         return true;
+    }
+    
+    public Energy removeRandomEnergy() {
+        return en.remove(r.nextInt(en.size()));
     }
     
     //Return an array of energy counts in the same format as Util determines costs

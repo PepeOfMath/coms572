@@ -30,11 +30,18 @@ public class State {
     public Field playerOneF; //The human player, for now
     public Field playerTwoF; //The cpu player, for now
     public int turnCount;
+    public boolean playedEnergy; //Three toggles which should reset on each turn
+    public boolean playedSupporter;
+    public boolean performedSwitch;
     
     public State(String p1DeckFile, String p2DeckFile) {
         playerOneF = new Field(p1DeckFile);
         playerTwoF = new Field(p2DeckFile);
         turnCount = 0;
+        
+        playedEnergy = false;
+        playedSupporter = false;
+        performedSwitch = false;
     }
     
     public int initialDraw(boolean playerOne) {
@@ -105,6 +112,22 @@ public class State {
         return f.playBasicPkmn(name, turnCount);
     }
     
+    //Try to play an Energy card
+    public boolean playEnergy(boolean playerOne, String name, int slotNum) {
+        if (playedEnergy) return false; //Cannot play another energy
+        Field f = playerOne ? playerOneF : playerTwoF;
+        
+        //TODO: finish this function
+        return false;
+    }
+    
+    //Try to switch 2 Pokemon on the field
+    public boolean doSwitch(boolean playerOne, int slotNum) {
+        if (performedSwitch) return false; //Cannot switch twice
+        Field f = playerOne ? playerOneF : playerTwoF;
+        return f.doSwitch(slotNum);
+    }
+    
     //Print out the hand for the specified user
     public void printHand(boolean playerOne) {
         Field f = playerOne ? playerOneF : playerTwoF;
@@ -164,7 +187,12 @@ public class State {
         System.out.println("");
     }
 
-
+    //Reset the set of switch variables
+    public void resetSwitches() {
+        playedEnergy = false;
+        playedSupporter = false;
+        performedSwitch = false;
+    }
   
 }
 

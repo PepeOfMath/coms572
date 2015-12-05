@@ -83,6 +83,25 @@ public class Field {
         return true;
     }
     
+    public boolean doSwitch(int slotNum) {
+        if(slotNum < 0 || slotNum >= pkmnSlots.length) return false; //No such position
+        if(pkmnSlots[slotNum] == null) return false; //No pokemon to switch with
+        Pokemon p = pkmnSlots[0].getPokemon();
+        if(p.retreatCost > pkmnSlots[0].getEnergyCount()) return false;
+        
+        //The retreat is valid
+        //Remove the necessary energies (remove from Slot, move to Discard)
+        for( int i = 0; i < p.retreatCost; i++ ) {
+            discard.add( pkmnSlots[0].removeRandomEnergy() );
+        }
+        //Swap, remove any status conditions
+        Position tmp = pkmnSlots[0];
+        tmp.stat = Status.NORMAL;
+        pkmnSlots[0] = pkmnSlots[slotNum];
+        pkmnSlots[slotNum] = tmp;
+        return true;
+    }
+    
     //Return true if a card with the specified name is contained in the hand
     public boolean hasCardInHand(String name) {
         return findCardByName(name) != null;

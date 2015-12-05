@@ -52,10 +52,10 @@ public class Main {
             int humTries = game.initialDraw(true); //Human is player 1
             if (cpuTries > humTries) {
                 //TODO: CPU may take bonus cards (low priority)
-                printBlock("TODO: CPU may take bonus cards");
+                printBlock("TODO: CPU may take up to " + 2*(cpuTries-humTries) + " bonus cards");
             } else if (cpuTries < humTries) {
                 //TODO: Human may take bonus cards
-                printBlock("TODO: Human may take bonus cards");
+                printBlock("TODO: Human may take up to " + 2*(humTries-cpuTries) + " bonus cards");
             }
             
             //TODO (high priority)
@@ -105,7 +105,8 @@ public class Main {
             }
             
             
-            
+            //Now Player One begins by drawing a Card, which should not fail
+            game.drawCardsToHand(!cpuPlayer, 1);
             
             //Loop for commands
             printBlock("Press Enter to Begin Game");
@@ -147,17 +148,38 @@ public class Main {
                     printBlock("Ending Turn");
                     //Toggle player control
                     cpuPlayer = !cpuPlayer;
-                    //TODO Handle between turn effects
+                    //TODO Handle between turn effects (status effects)
+                    
+                    //Begin next player's turn
+                    game.resetSwitches();
+                    int ncard = game.drawCardsToHand(!cpuPlayer, 1);
+                    if (ncard == 0) { //The current player loses, and the game ends
+                        contin = false;
+                        printBlock("Player " + (cpuPlayer ? 2 : 1) + " Wins!");
+                    }
                 } else if(cmd.startsWith("attack")) {
                     printBlock("Attacking!");
                     //TODO Handle attack
+                    
                     //Toggle Player control
                     cpuPlayer = !cpuPlayer;
-                    //TODO Handle between turn effects
+                    //TODO Handle between turn effects (status effects)
+                    
+                    //Begin next player's turn
+                    game.resetSwitches();
+                    int ncard = game.drawCardsToHand(!cpuPlayer, 1);
+                    if (ncard == 0) { //The current player loses, and the game ends
+                        contin = false;
+                        printBlock("Player " + (cpuPlayer ? 1 : 2) + " Wins!");
+                    }
                 } else if(cmd.startsWith("switch")) {
-                    printBlock("Switching");
-                    //TODO pay retreat cost
-                    //switch order of pokemon, remove status effects
+                    //Extract a numerical parameter between 1-5 indicating the position to switch to
+                    int slotNum = Integer.parseInt( cmd.substring("switch".length()).trim() );
+                    if (game.doSwitch(!cpuPlayer, slotNum)) {
+                        printBlock("Switched Active Pokemon");
+                    } else {
+                        printBlock("Invalid Switch");
+                    }
                 } else if(cmd.startsWith("play")) {
                     printBlock("Playing a Card");
                     //TODO handle card stuff
