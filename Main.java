@@ -155,7 +155,7 @@ public class Main {
                     int ncard = game.drawCardsToHand(!cpuPlayer, 1);
                     if (ncard == 0) { //The current player loses, and the game ends
                         contin = false;
-                        printBlock("Player " + (cpuPlayer ? 2 : 1) + " Wins!");
+                        printBlock("Player " + (cpuPlayer ? 1 : 2) + " Wins!");
                     }
                 } else if(cmd.startsWith("attack")) {
                     printBlock("Attacking!");
@@ -182,6 +182,18 @@ public class Main {
                     }
                 } else if(cmd.startsWith("play")) {
                     printBlock("Playing a Card");
+                    //Extract the number parameter
+                    //Extract the card name
+                    String trimmed = cmd.substring("play".length()).trim();
+                    int val = trimmed.indexOf(" "); //May not be relevant for some cards
+                    int slotNum = Integer.parseInt( trimmed.substring(0,val) );
+                    String cardName = trimmed.substring(val).trim();
+                    if (game.playCard(!cpuPlayer, cardName, slotNum)) {
+                        printBlock("Played Card " + cardName);
+                    } else {
+                        printBlock("Invalid Play");
+                    }
+                    
                     //TODO handle card stuff
                 } else {
                     printBlock("Unrecognized Command");
@@ -204,7 +216,6 @@ public class Main {
                 return;
             }
         }
-    
     }
     
     public static void prompt(boolean cpuPlayer) {
@@ -220,8 +231,4 @@ public class Main {
     public static void printBlock(String s) {
         System.out.println("|----| " + s);
     }
-    
-
-
-
 }

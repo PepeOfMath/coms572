@@ -112,13 +112,19 @@ public class State {
         return f.playBasicPkmn(name, turnCount);
     }
     
+    //Handle play of an evolution Pokemon 
+    public boolean playEvolvPkmn(boolean playerOne, String name, int slotNum) {
+        //TODO
+        return false;
+    }
+    
     //Try to play an Energy card
     public boolean playEnergy(boolean playerOne, String name, int slotNum) {
         if (playedEnergy) return false; //Cannot play another energy
         Field f = playerOne ? playerOneF : playerTwoF;
-        
-        //TODO: finish this function
-        return false;
+        boolean result = f.playEnergy(name, slotNum);
+        playedEnergy = result;
+        return result;
     }
     
     //Try to switch 2 Pokemon on the field
@@ -126,6 +132,27 @@ public class State {
         if (performedSwitch) return false; //Cannot switch twice
         Field f = playerOne ? playerOneF : playerTwoF;
         return f.doSwitch(slotNum);
+    }
+    
+    public boolean playCard(boolean playerOne, String name, int slotNum) {
+        Field f = playerOne ? playerOneF : playerTwoF;
+        //get the card
+        Card c = f.findCardByName(name);
+        if (c instanceof Energy) {
+            return playEnergy(playerOne, name, slotNum);
+        } else if (c instanceof Trainer) {
+            //TODO handle trainer cards
+            return false;
+        } else {//Pokemon Card
+            if( ((Pokemon)c).evolvesFrom.equals("Null") ) { //Basic Pokemon
+                return playBasicPkmn(playerOne, name);
+            } else { //Attempt to do an Evolution at the given slot
+                return playEvolvPkmn(playerOne, name, slotNum);
+            }
+        }
+        //Pass control to the appropriate Field in order to place the card correctly
+        //May have some effects to handle with the whole state, however so we need to return 
+        //a card effect TODO.  This means an invalid play would have to throw an exception
     }
     
     //Print out the hand for the specified user

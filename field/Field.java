@@ -124,6 +124,7 @@ public class Field {
             if(pkmnSlots[i] == null) {
                 pkmnSlots[i] = new Position(p, turnNumber);
                 hand.remove(p);
+                unseenOp.remove(p);
                 handCount--;
                 return true;
             }
@@ -131,8 +132,19 @@ public class Field {
         return false; //No space available to play another basic pokemon
     }
     
+    //Play the desired energy if possible
+    public boolean playEnergy(String name, int slotNum) {
+        Energy e = (Energy)findCardByName(name);
+        if(e == null || pkmnSlots[slotNum] == null) return false; //Invalid play
+        pkmnSlots[slotNum].addEnergy(e);
+        hand.remove(e);
+        unseenOp.remove(e);
+        handCount--;        
+        return true;
+    }
+    
     //Returns the card with the given name, if it exists (null otherwise)
-    private Card findCardByName(String name) {
+    public Card findCardByName(String name) {
         for(int i = 0; i < hand.size(); i++) {
             if( hand.get(i).name.equalsIgnoreCase(name) ) return hand.get(i);
         }
