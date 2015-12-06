@@ -119,6 +119,26 @@ public class Position {
         return (damage >= getPokemon().totalHP);
     }
     
+    public void processStatus(boolean turn) {
+        switch(stat) {
+            case ASLEEP:
+                if (r.nextDouble() > 0.5) stat = Status.NORMAL;
+                break;
+            case POISON:
+                applyDamage(10, Type.EFFECT);
+                break;
+            case DBLPOISON:
+                applyDamage(20, Type.EFFECT);
+                break;
+            case BURN:
+                if (r.nextDouble() < 0.5) applyDamage(20, Type.EFFECT);
+                break;
+            case PARALYZED:
+                if (!turn) stat = Status.NORMAL;
+                break;
+        }
+    }
+    
     public String energyString() {
         int[] list = determineEnergy();
         String text = "";

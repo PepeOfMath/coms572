@@ -8,7 +8,7 @@ Dragon
 None
 3
 1D2C,Consume,doDamage:40,healDamage:EQ
-1P1D2C,Destructor Beam,doDamage:90
+1P1D2C,Destructor Beam,doDamage:90,coin:1:E
 
 <3>
 Pokemon
@@ -43,8 +43,8 @@ Whirlipede
 Psychic
 None
 2
-1P1C,Toxic Claws,doDamage:30
-1P2C,Wild Horns,doDamage:50
+1P1C,Toxic Claws,doDamage:30,doStatus:DBLPOISON
+1P2C,Wild Horns,doDamage:50,coin:1:20,coin:1:20
 
 <3>
 Pokemon
@@ -67,7 +67,7 @@ Null
 Psychic
 None
 2
-1P,Poison Sting,doDamage:0
+1P,Poison Sting,coin:1:POISON
 2C,Tackle,doDamage:20
 
 <1>
@@ -79,7 +79,7 @@ Gothorita
 Psychic
 None
 2
-1P1C,Doom Decree,doDamage:0
+1P1C,Doom Decree,coin:2:1000
 1P2C,Black Magic,doDamage:40
 
 <2>
@@ -91,7 +91,7 @@ Gothita
 Psychic
 None
 1
-1P,Hypnoblast,doDamage:10
+1P,Hypnoblast,doDamage:10,doStatus:ASLEEP
 1P2C,Mind Shock,doDamage:40
 
 <3>
@@ -139,26 +139,26 @@ Null
 Fighting
 None
 1
-1C,Show Off,doDamage:0
+1C,Show Off,deckHand:EE
 2C,Psyshot,doDamage:20
 
 <2>
 Trainer
 Cheren
 True
--
+deckHand:111
 
 <2>
 Trainer
 Cilan
 True
--
+deckHand:EEE
 
 <1>
 Trainer
 Professor Elm's Training Method
 True
--
+deckHand:V
 
 <3>
 Trainer
@@ -170,13 +170,13 @@ False
 Trainer
 Potion
 False
--
+healDamage:30
 
 <2>
 Trainer
 Energy Retrieval
 False
--
+discHand:EE
 
 <12>
 Energy

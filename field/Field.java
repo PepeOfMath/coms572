@@ -4,6 +4,7 @@ import cards.*;
 import java.util.ArrayList;
 import util.Util;
 import java.util.Random;
+import java.util.Collections;
 
 /**
  * Represents one side of the game field, including hand, deck, etc.
@@ -238,4 +239,56 @@ public class Field {
         }
         return false;
     }
+    
+    //Get a random card from the deck and put it into the hand (by type)
+    //Supported types:
+    // E: Energy card
+    // 1: Draw a card
+    // V: Evolution card
+    public boolean getCardFromDeck(char c) {
+        if (c == 'E') {
+            for (int i = 0; i < deck.size(); i++) {
+                if(deck.get(i) instanceof Energy) {
+                    hand.add( deck.remove(i) );
+                    deckCount--;
+                    handCount++;
+                    Collections.shuffle(deck);
+                    return true;
+                }
+            }
+        } else if (c == '1') {
+            return drawCardToHand();
+        } else if (c == 'V') {
+            for (int i = 0; i < deck.size(); i++) {
+                if(deck.get(i) instanceof Pokemon && !((Pokemon)deck.get(i)).evolvesFrom.equals("Null")) {
+                    hand.add( deck.remove(i) );
+                    deckCount--;
+                    handCount++;
+                    Collections.shuffle(deck);
+                    return true;
+                }
+            
+            }
+        }
+        return false;
+    }
+    
+    //Similar to above, but we get a card from the discard pile and bring it back to the hand
+    //Supported types:
+    // E: Energy card
+    public boolean getCardFromDisc(char c) {
+        if (c == 'E') {
+            for (int i =0; i < discard.size(); i++) {
+                if(discard.get(i) instanceof Energy) {
+                    hand.add( discard.remove(i) );
+                    handCount++;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    //Get a random card from the deck and swap it with a random hand card
+    
 }

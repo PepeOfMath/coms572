@@ -139,7 +139,8 @@ public class Main {
                     cmd = s.nextLine().toLowerCase();
                 }
                 
-                
+                //Do a quick validation of inputs first
+                if (!Util.validateCommand(cmd)) cmd = ""; //Makes it clearly invalid so no errors occur
                 
                 //Read and execute the command.
                 if(cmd.startsWith("stop")) {
@@ -149,7 +150,10 @@ public class Main {
                     printBlock("Ending Turn");
                     //Toggle player control
                     cpuPlayer = !cpuPlayer;
-                    //TODO Handle between turn effects (status effects)
+                    
+                    //Handle between turn effects
+                    game.processStatus(!cpuPlayer);
+                    contin = evaluateCheckPokemon( game.checkPokemon() );
                     
                     //Begin next player's turn
                     game.resetSwitches(cpuPlayer);
@@ -162,11 +166,13 @@ public class Main {
                     //Single parameter {1 or 2} to decide which attack is used
                     int choice = Integer.parseInt( cmd.substring("attack".length()).trim() );
                     if( game.doAttack(!cpuPlayer, choice) ) {
-                        contin = evaluateCheckPokemon( game.checkPokemon() );
-                        
+                        //contin = evaluateCheckPokemon( game.checkPokemon() );
                         //Toggle Player control
                         cpuPlayer = !cpuPlayer;
-                        //TODO Handle between turn effects (status effects)
+                        
+                        //Handle between turn effects
+                        game.processStatus(!cpuPlayer);
+                        contin = evaluateCheckPokemon( game.checkPokemon() );
                         
                         //Begin next player's turn
                         game.resetSwitches(cpuPlayer);

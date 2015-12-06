@@ -87,7 +87,7 @@ public final class Util {
                 
                 for (int i = 0; i < count; i++) {
                     //deck[index] = 
-                    deck.add(new Trainer(name, supporter, null)); //TODO: define an actual effect
+                    deck.add(new Trainer(name, supporter, effect));
                     index++;
                 }
             } else if (cardType.equals("Energy")) {
@@ -150,5 +150,31 @@ public final class Util {
     private static int getCount(String s) {
         String ss = s.substring(1,s.length()-1);
         return Integer.parseInt(ss);
+    }
+    
+    public static boolean validateCommand(String s) {
+        if (s.startsWith("stop") || s.startsWith("end turn")) return true;
+        if (s.startsWith("attack")) {
+            //check that we have a numerical parameter next
+            s = s.substring("attack".length()).trim();
+            try {
+                int k = Integer.parseInt(s);
+                if (k == 1 || k == 2) return true;
+                return false;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        }
+        if (s.startsWith("switch") || s.startsWith("play")) {
+            s = s.trim().split(" ")[1];
+            try {
+                Integer.parseInt(s);
+                return true;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        }
+        
+        return false;
     }
 }

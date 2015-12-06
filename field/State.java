@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import cards.*;
 import util.*;
+import java.util.Random;
 
 public class State {
 
@@ -149,7 +150,7 @@ public class State {
             System.out.println("Handling Trainer by Discarding - No Effect");
             Trainer t = (Trainer)f.findCardByName(name);
             if (t.isSupporter && playedSupporter) return false; //Can't play two supporters
-            Effect e = t.cardEffect;
+            String e = t.cardEffect;
             //If the effect is valid, then we discard the card, else don't
             if (t.isSupporter) playedSupporter = true;
             return f.playTrainer(t);
@@ -182,6 +183,10 @@ public class State {
             System.out.println("Opponent has No Active Pokemon");
             return false;
         }
+        if (f.pkmnSlots[0].stat == Status.ASLEEP || f.pkmnSlots[0].stat == Status.PARALYZED) {
+            System.out.println("Status Prevents Attack - Turn Ending");
+            return true;
+        }
         
         //get the attack effect and name
         System.out.println("Attacking with " + p.getAttackName(choice));
@@ -191,17 +196,77 @@ public class State {
         //to handle trainer card effects also
         int damageDone = 0;
         for (int i = 0; i < effects.length; i++) {
+        
             if (effects[i].startsWith("doDamage")) {
                 int amount = Integer.parseInt( effects[i].substring("doDamage".length()+1) );
                 damageDone += f2.pkmnSlots[0].applyDamage(amount, p.type);
+                
             } else if (effects[i].startsWith("healDamage")) {
                 String s = effects[i].substring("healDamage".length()+1);
                 int amount = (s.equals("EQ")) ? damageDone : Integer.parseInt(s);
                 f.pkmnSlots[0].healDamage(amount);
+                
+            } else if (effects[i].startsWith("deckHand")) {
+                char[] c = effects[i].substring("deckHand".length()+1).trim().toCharArray();
+                for (int j = 0; j < c.length; j++) {
+                    f.getCardFromDeck(c[j]);
+                }
+            
+            } else if (effects[i].startsWith("doStatus")) {
+                f2.pkmnSlots[0].stat = Status.valueOf( effects[i].substring("doStatus".length()+1).trim() );
+                
+            } else if (effects[i].startsWith("coin")) {
+                String[] parts = effects[i].trim().split(":");
+                int ncoin = Integer.parseInt(parts[1]);
+                Random r = new Random();
+                if ( (ncoin == 1 && r.nextDouble() > 0.5) || (ncoin == 2 && r.nextDouble() > 0.75) ) {
+                    //Actually perform the effect
+                    //Options: do damage, apply effect, discard energy
+                    if (parts[2].equals("E")) {
+                        f2.discard.add( f2.pkmnSlots[0].removeRandomEnergy() );
+                    } else {
+                        try {
+                            int amount = Integer.parseInt( parts[2] );
+                            damageDone += f2.pkmnSlots[0].applyDamage(amount, p.type);
+                        } catch (NumberFormatException e) {
+                            f2.pkmnSlots[0].stat = Status.valueOf( parts[2] );
+                        }
+                    }
+                }
+
+            }
+        }
+        //Fainting Results are handled separately (see the method below)
+        return true;
+    }
+    
+    public boolean doTrainerEffect(boolean playerOne, int choice, String effect) {
+        Field f = playerOne ? playerOneF : playerTwoF;
+        String[] effects = effect.split(",");
+        for (int i = 0; i < effects.length; i++) {
+        
+            if (effects[i].startsWith("healDamage")) {
+                String s = effects[i].substring("healDamage".length()+1);
+                int amount = Integer.parseInt(s); //(s.equals("EQ")) ? damageDone : 
+                if (choice >= 0 && choice <= f.pkmnSlots.length && f.pkmnSlots[choice] != null) {
+                    f.pkmnSlots[choice].healDamage(amount);
+                }
+                
+            } else if (effects[i].startsWith("deckHand")) {
+                char[] c = effects[i].substring("deckHand".length()+1).trim().toCharArray();
+                for (int j = 0; j < c.length; j++) {
+                    f.getCardFromDeck(c[j]);
+                }
+                
+            } else if (effects[i].startsWith("discHand")) {
+                char[] c = effects[i].substring("discHand".length()+1).trim().toCharArray();
+                for (int j = 0; j < c.length; j++) {
+                    f.getCardFromDisc(c[j]);
+                }
+                
             }
         }
         
-        //Fainting Results are handled separately (see the method below)
         return true;
     }
     
@@ -238,6 +303,11 @@ public class State {
         //If Eiher Player has No Active Pokemon or No Prizes, we can declare End of Game (interpret)
         return pOneWin + pTwoWin;
     
+    }
+    
+    public void processStatus(boolean playerOne) {
+        playerOneF.pkmnSlots[0].processStatus(playerOne);
+        playerTwoF.pkmnSlots[0].processStatus(!playerOne);
     }
     
     //Print out the hand for the specified user
@@ -305,6 +375,4 @@ public class State {
         playedSupporter = false;
         performedSwitch = false;
     }
-  
 }
-

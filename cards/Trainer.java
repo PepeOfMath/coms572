@@ -4,9 +4,9 @@ package cards;
 public class Trainer extends Card {
     //public final String name;
     public final boolean isSupporter;
-    public final Effect cardEffect;
+    public final String cardEffect;
     
-    public Trainer(String name, boolean isSupporter, Effect cardEffect) {
+    public Trainer(String name, boolean isSupporter, String cardEffect) {
         super(name);
         //this.name = name;
         this.isSupporter = isSupporter;
