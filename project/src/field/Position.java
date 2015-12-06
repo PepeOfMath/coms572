@@ -56,13 +56,18 @@ public class Position {
 
     //Attempt to evolve the Pokemon in this position
     public boolean evolveWith(Pokemon p, int newTurnNum) {
-        if (turnPlayed == newTurnNum) return false; //Can't evolve the same turn a card is played
-        if (this.getPokemon().name.equals(p.evolvesFrom)) {
+    	if (canEvolveWith(p, newTurnNum)) {
             pkmn.add(p);
             turnPlayed = newTurnNum;
             return true;
         }
         return false;
+    }
+    
+    public boolean canEvolveWith(Pokemon p, int newTurnNum) {
+    	if (turnPlayed == newTurnNum) return false; //Can't evolve the same turn a card is played
+    	if (this.getPokemon().name.equals(p.evolvesFrom)) return true;
+    	return false;
     }
     
     public boolean addEnergy(Energy e) {

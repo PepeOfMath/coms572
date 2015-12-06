@@ -4,12 +4,14 @@ package cards;
 public class Trainer extends Card {
     //public final String name;
     public final boolean isSupporter;
+    public final boolean targetsPokemon;
     public final String cardEffect;
     
-    public Trainer(String name, boolean isSupporter, String cardEffect) {
+    public Trainer(String name, boolean isSupporter, boolean targetsPokemon, String cardEffect) {
         super(name);
         //this.name = name;
         this.isSupporter = isSupporter;
+        this.targetsPokemon = targetsPokemon;
         this.cardEffect = cardEffect;
         
     }

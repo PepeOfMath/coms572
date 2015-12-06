@@ -42,6 +42,10 @@ public class Pokemon extends Card {
         return name;
     }
     
+    public boolean isBasic() {
+    	return evolvesFrom.equals("Null");
+    }
+    
     public boolean equals(Object o) {
         if(!(o instanceof Pokemon)) return false;
         return this.name.equals( ((Pokemon)o).name );

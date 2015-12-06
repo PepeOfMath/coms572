@@ -15,57 +15,57 @@ public class Main {
         String cmd;
         AI agent = new RandomPlAI(); //Instantiate AI here
         
-        printBlock("Press Enter to Begin");
+        Util.printBlock("Press Enter to Begin");
         while(!s.hasNextLine());
         s.nextLine();
         State game;
         
         while(true) {
             //Start up
-            printBlock("Would you like to control the CPU Player? (Y/N)");
-            prompt(cpuPlayer);
+        	Util.printBlock("Would you like to control the CPU Player? (Y/N)");
+        	Util.prompt(cpuPlayer);
             while(!s.hasNextLine());
             cmd = s.nextLine();
             if (cmd.toLowerCase().startsWith("y")) {
                 cpuControl = true;
-                printBlock("Player is Controlling the Computer");
+                Util.printBlock("Player is Controlling the Computer");
             } else {
             }
             
             
             //Set up the initial game State
-            printBlock("Initializing Game");
+            Util.printBlock("Initializing Game");
             game = new State(deckFilePath, deckFilePath);
             
             //Now we need to do preliminary game setup
             // This includes these actions:
             // * Shuffle Deck
             //   Draw a 7 card hand
-            //   If there are basic pokemon, 
+            //   If there are basic Pokemon, 
             //     set up prizes
-            //     (play some basic pokemon ... probably needs some AI)
-            //   If there are no basic pokemon,
+            //     (play some basic Pokemon ... probably needs some AI)
+            //   If there are no basic Pokemon,
             //     restart at step *
-            printBlock("Drawing Hands");
-            printBlock("CPU draw");
+            Util.printBlock("Drawing Hands");
+            Util.printBlock("CPU draw");
             int cpuTries = game.initialDraw(false);
-            printBlock("Hu draw");
+            Util.printBlock("Hu draw");
             int humTries = game.initialDraw(true); //Human is player 1
             if (cpuTries > humTries) {
                 //TODO: CPU may take bonus cards (low priority)
-                printBlock("TODO: CPU may take up to " + 2*(cpuTries-humTries) + " bonus cards");
+            	Util.printBlock("TODO: CPU may take up to " + 2*(cpuTries-humTries) + " bonus cards");
             } else if (cpuTries < humTries) {
                 //TODO: Human may take bonus cards
-                printBlock("TODO: Human may take up to " + 2*(humTries-cpuTries) + " bonus cards");
+            	Util.printBlock("TODO: Human may take up to " + 2*(humTries-cpuTries) + " bonus cards");
             }
             
-            printBlock("Player 1: Choose Basic Pokemon To Begin");
-            printBlock("Enter one Pokemon Name at a Time; Use \"done\" to finish");
+            Util.printBlock("Player 1: Choose Basic Pokemon To Begin");
+            Util.printBlock("Enter one Pokemon Name at a Time; Use \"done\" to finish");
             game.printHand(true);
             String toPlay = "";
             boolean canEnd = false;
             while(!toPlay.toLowerCase().equals("done")) {
-                prompt(false);
+            	Util.prompt(false);
                 while(!s.hasNextLine());
                 toPlay = s.nextLine().trim();
                 //interpret and attempt to play cards
@@ -74,20 +74,20 @@ public class Main {
                     canEnd = true;
                 } else if (!canEnd || !toPlay.toLowerCase().equals("done")) {
                     toPlay = "";
-                    printBlock("Invalid Choice - No Card Played");
+                    Util.printBlock("Invalid Choice - No Card Played");
                 }
             }
             
             //TODO (high priority)
             //Idea: probably use heuristics here to choose 1-3 starting pokemon based on the hand
             if(true /*cpuControl*/) {//TODO switch condition when ready
-                printBlock("Player 2: Choose Basic Pokemon To Begin");
-                printBlock("Enter one Pokemon Name at a Time; Use \"done\" to finish");
+            	Util.printBlock("Player 2: Choose Basic Pokemon To Begin");
+                Util.printBlock("Enter one Pokemon Name at a Time; Use \"done\" to finish");
                 game.printHand(false);
                 toPlay = "";
                 canEnd = false;
                 while(!toPlay.toLowerCase().equals("done")) {
-                    prompt(true);
+                	Util.prompt(true);
                     while(!s.hasNextLine());
                     toPlay = s.nextLine().trim();
                     //interpret and attempt to play cards
@@ -96,12 +96,12 @@ public class Main {
                         canEnd = true;
                     } else if (!canEnd || !toPlay.toLowerCase().equals("done")) {
                         toPlay = "";
-                        printBlock("Invalid Choice - No Card Played");
+                        Util.printBlock("Invalid Choice - No Card Played");
                     }
                 }
             } else {
                 //TODO have AI choose pokemon
-                printBlock("TODO: AI Selects Basic Pokemon");
+            	Util.printBlock("TODO: AI Selects Basic Pokemon");
             }
             
             
@@ -109,7 +109,7 @@ public class Main {
             game.drawCardsToHand(!cpuPlayer, 1);
             
             //Loop for commands
-            printBlock("Press Enter to Begin Game");
+            Util.printBlock("Press Enter to Begin Game");
             while(!s.hasNextLine());
             s.nextLine();
             
@@ -120,18 +120,18 @@ public class Main {
                  *   "stop"         ends the game immediately
                  *   "end turn"     player ends turn, control switches, between turn effects happen
                  *   "attack ..."   use an attack attack # (1 or 2)
-                 *   "switch ..."   switch the active pokemon switch position#
+                 *   "switch ..."   switch the active Pokemon switch position#
                  *   "play ..."     play a card: play position# cardName
                  */
                 //TODO: maybe print game state before each action
-                printBlock("CURRENT GAME STATE");
+            	Util.printBlock("CURRENT GAME STATE");
                 game.printState(!cpuPlayer, !cpuPlayer || cpuControl);
                 
                 
-                prompt(cpuPlayer);
+                Util.prompt(cpuPlayer);
                 if (cpuPlayer && !cpuControl) {
                     //TODO (high priority) have AI choose an action
-                    printBlock("TODO: ask AI for action");
+                	Util.printBlock("TODO: ask AI for action");
                     cmd = agent.chooseAction(game, !cpuPlayer);
                     System.out.println("Theoretical Action: " + cmd);
                     cmd = "end turn";
@@ -145,56 +145,55 @@ public class Main {
                 
                 //Read and execute the command.
                 if(cmd.startsWith("stop")) {
-                    printBlock("Terminating Game");
+                	Util.printBlock("Terminating Game");
                     contin = false;
                     
                 } else if(cmd.startsWith("end turn")) {
-                    printBlock("Ending Turn");
+                	Util.printBlock("Ending Turn");
                     //Toggle player control
                     cpuPlayer = !cpuPlayer;
                     
                     //Handle between turn effects
                     game.processStatus(!cpuPlayer);
-                    contin = evaluateCheckPokemon( game.checkPokemon() );
+                    contin = Util.evaluateCheckPokemon( game.checkPokemon() );
                     
                     //Begin next player's turn
                     game.resetSwitches(cpuPlayer);
                     int ncard = game.drawCardsToHand(!cpuPlayer, 1);
                     if (ncard == 0) { //The current player loses, and the game ends
                         contin = false;
-                        printBlock("Player " + (cpuPlayer ? 1 : 2) + " Wins!");
+                        Util.printBlock("Player " + (cpuPlayer ? 1 : 2) + " Wins!");
                     }
                     
                 } else if(cmd.startsWith("attack")) {
                     //Single parameter {1 or 2} to decide which attack is used
                     int choice = Integer.parseInt( cmd.substring("attack".length()).trim() );
                     if( game.doAttack(!cpuPlayer, choice) ) {
-                        //contin = evaluateCheckPokemon( game.checkPokemon() );
                         //Toggle Player control
                         cpuPlayer = !cpuPlayer;
                         
                         //Handle between turn effects
                         game.processStatus(!cpuPlayer);
-                        contin = evaluateCheckPokemon( game.checkPokemon() );
+                        contin = Util.evaluateCheckPokemon( game.checkPokemon() );
                         
                         //Begin next player's turn
                         game.resetSwitches(cpuPlayer);
                         int ncard = game.drawCardsToHand(!cpuPlayer, 1);
                         if (ncard == 0) { //The current player loses, and the game ends
                             contin = false;
-                            printBlock("Player " + (cpuPlayer ? 1 : 2) + " Wins!");
+                            Util.printBlock("Player " + (cpuPlayer ? 1 : 2) + " Wins!");
                         }
                     } else {
-                        printBlock("Invalid Attack");
+                    	Util.printBlock("Invalid Attack");
                     }
                     
                 } else if(cmd.startsWith("switch")) {
                     //Extract a numerical parameter between 1-5 indicating the position to switch to
                     int slotNum = Integer.parseInt( cmd.substring("switch".length()).trim() );
                     if (game.doSwitch(!cpuPlayer, slotNum)) {
-                        printBlock("Switched Active Pokemon");
+                    	Util.printBlock("Switched Active Pokemon");
                     } else {
-                        printBlock("Invalid Switch");
+                    	Util.printBlock("Invalid Switch");
                     }
                     
                 } else if(cmd.startsWith("play")) {
@@ -205,62 +204,26 @@ public class Main {
                     int slotNum = Integer.parseInt( trimmed.substring(0,val) );
                     String cardName = trimmed.substring(val).trim();
                     if (game.playCard(!cpuPlayer, cardName, slotNum)) {
-                        printBlock("Played Card " + cardName);
+                    	Util.printBlock("Played Card " + cardName);
                     } else {
-                        printBlock("Invalid Play");
+                    	Util.printBlock("Invalid Play");
                     }
                     
                 } else {
-                    printBlock("Invalid Action");
+                	Util.printBlock("Invalid Action");
                 }
-                
-                
-                //If the command is End Turn or Attack, toggle the cpuPlayer flag
-            
-                //prompt(cpuPlayer);
             }
             
-            
             //Decide if we want to restart the game
-            printBlock("Would you like to play a new game? (Y/N)");
-            prompt(cpuPlayer);
+            Util.printBlock("Would you like to play a new game? (Y/N)");
+            Util.prompt(cpuPlayer);
             while(!s.hasNextLine());
             cmd = s.nextLine();
             if (cmd.toLowerCase().startsWith("n")) {
-                printBlock("Shutting Down");
+            	Util.printBlock("Shutting Down");
                 s.close();
                 return;
             }
         }
-    }
-    
-    //Return true if the result indicates that the game should continue
-    //Also print any relevant messages
-    public static boolean evaluateCheckPokemon(int result) {
-        if (result == Util.PLAYER_ONE_WIN) {
-            printBlock("Player 1 Wins!");
-            return false;
-        } else if (result == Util.PLAYER_TWO_WIN) {
-            printBlock("Player 2 Wins!");
-            return false;
-        } else if (result == Util.GAME_DRAW) {
-            printBlock("Game Ends in a Draw");
-            return false;
-        }
-        return true;
-    }
-    
-    public static void prompt(boolean cpuPlayer) {
-        if (cpuPlayer) {
-            System.out.print("CPU >> ");
-        } else {
-            System.out.print("Hu  >> ");
-        }
-    
-    }
-    
-    //Print with a small leading block
-    public static void printBlock(String s) {
-        System.out.println("|----| " + s);
     }
 }

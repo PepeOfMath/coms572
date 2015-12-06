@@ -1,5 +1,7 @@
 package field;
 
+import java.util.ArrayList;
+
 /** 
  * A class representing the State of the game, including:
  *      Human player deck count, hand count, and prize count
@@ -326,7 +328,7 @@ public class State {
         
         int pOneWin = (f.prizeCount == 0 || !hasActive2) ? 1 : 0;
         int pTwoWin = (f2.prizeCount == 0 || !hasActive1) ? 2 : 0;
-        //If Eiher Player has No Active Pokemon or No Prizes, we can declare End of Game (interpret)
+        //If Either Player has No Active Pokemon or No Prizes, we can declare End of Game (interpret)
         return pOneWin + pTwoWin;
     
     }
@@ -400,5 +402,63 @@ public class State {
         playedEnergy = false;
         playedSupporter = false;
         performedSwitch = false;
+    }
+    
+    /**
+     * Generate a list of possible moves for the given player
+     * @param playerOne The current player
+     * @return List of moves
+     */
+    public ArrayList<String> getAllMoves(boolean playerOne) {
+    	ArrayList<String> commands = new ArrayList<String>();
+    	Field f = playerOne ? playerOneF : playerTwoF;
+    	Pokemon p = f.pkmnSlots[0].getPokemon();
+    	
+    	//Play card: (this is going to be tricky)
+    	for (int i = 0; i < f.handCount; i++) {
+    		Card c = f.hand.get(i);
+    		if (c instanceof Energy && !playedEnergy) {
+        		for (int j = 0; j < f.pkmnSlots.length; j++) {
+        			if (f.pkmnSlots[j] != null) commands.add("play " + i + " " + c.name);
+        		}
+    		} else if (c instanceof Trainer) {
+    			Trainer t = (Trainer)c;
+    			if (!(t.isSupporter && playedSupporter)) {
+    				if (!t.targetsPokemon) {
+    					commands.add("play 0 " + c.name);
+    				} else {
+    					for (int j = 0; j < f.pkmnSlots.length; j++) {
+    	        			if (f.pkmnSlots[j] != null) commands.add("play " + i + " " + c.name);
+    	        		}
+    				}
+    			}
+    		} else if (c instanceof Pokemon) {
+    			Pokemon p2 = (Pokemon)c;
+    			if ( p2.isBasic() && (f.pkmnCount < f.pkmnSlots.length) ) {
+    				commands.add("play 0 " + p2.name);
+    			} else if ( !p2.isBasic() ) {
+    				for (int j = 0; j < f.pkmnSlots.length; j++) {
+    					//Check if the Pokemon can be evolved
+    					if (f.pkmnSlots[j] != null && f.pkmnSlots[j].canEvolveWith(p2, turnCount)) commands.add("play " + i + " " + c.name);
+    				}
+    			}
+    		}
+    	}
+    	
+    	//Switches (check energy requirements, add only for other benched pokemon)
+    	if (!performedSwitch && p.retreatCost > f.pkmnSlots[0].getEnergyCount()) {
+    		for (int i = 1; i < f.pkmnSlots.length; i++) {
+    			if (f.pkmnSlots[i] != null) commands.add("switch " + i);
+    		}
+    	}
+    	
+    	//Attacks: check energy requirements before adding the command
+        if ( Util.hasSufficientEnergy( f.pkmnSlots[0].determineEnergy(), p.getAttackCost(1) ) ) commands.add("attack 1");
+        if ( Util.hasSufficientEnergy( f.pkmnSlots[0].determineEnergy(), p.getAttackCost(2) ) ) commands.add("attack 2");
+    	
+    	//Can always end turn
+    	commands.add("end turn");
+    	
+    	return commands;
     }
 }

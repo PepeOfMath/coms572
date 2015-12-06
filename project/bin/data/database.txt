@@ -146,23 +146,27 @@ None
 Trainer
 Cheren
 True
+False
 deckHand:111
 
 <2>
 Trainer
 Cilan
 True
+False
 deckHand:EEE
 
 <1>
 Trainer
 Professor Elm's Training Method
 True
+False
 deckHand:V
 
 <3>
 Trainer
 Pokemon Communication
+False
 False
 -
 
@@ -170,11 +174,13 @@ False
 Trainer
 Potion
 False
+True
 healDamage:30
 
 <2>
 Trainer
 Energy Retrieval
+False
 False
 discHand:EE
 

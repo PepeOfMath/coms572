@@ -83,11 +83,12 @@ public final class Util {
             } else if (cardType.equals("Trainer")) {
                 String name = scan.nextLine().trim();
                 boolean supporter = (scan.nextLine().equals("True"));
+                boolean targetsPokemon = (scan.nextLine().equals("True"));
                 String effect = scan.nextLine();
                 
                 for (int i = 0; i < count; i++) {
                     //deck[index] = 
-                    deck.add(new Trainer(name, supporter, effect));
+                    deck.add(new Trainer(name, supporter, targetsPokemon, effect));
                     index++;
                 }
             } else if (cardType.equals("Energy")) {
@@ -178,5 +179,35 @@ public final class Util {
         }
         
         return false;
+    }
+    
+    //Print with a small leading block
+    public static void printBlock(String s) {
+        System.out.println("|----| " + s);
+    }
+    
+    //Return true if the result indicates that the game should continue
+    //Also print any relevant messages
+    public static boolean evaluateCheckPokemon(int result) {
+        if (result == Util.PLAYER_ONE_WIN) {
+            Util.printBlock("Player 1 Wins!");
+            return false;
+        } else if (result == Util.PLAYER_TWO_WIN) {
+        	Util.printBlock("Player 2 Wins!");
+            return false;
+        } else if (result == Util.GAME_DRAW) {
+        	Util.printBlock("Game Ends in a Draw");
+            return false;
+        }
+        return true;
+    }
+    
+    public static void prompt(boolean cpuPlayer) {
+        if (cpuPlayer) {
+            System.out.print("CPU >> ");
+        } else {
+            System.out.print("Hu  >> ");
+        }
+    
     }
 }
