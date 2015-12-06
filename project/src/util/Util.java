@@ -225,7 +225,7 @@ public final class Util {
         
         //Handle between turn effects
         game.processStatus(!cpuPlayer);
-        contin = Util.evaluateCheckPokemon( game.checkPokemon() , silent);
+        contin = Util.evaluateCheckPokemon( game.checkPokemon(silent) , silent);
         
         //Begin next player's turn
         game.resetSwitches(cpuPlayer);

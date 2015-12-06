@@ -204,7 +204,7 @@ public class State {
     }
     
     //Handle using an Attack
-    public boolean doAttack(boolean playerOne, int choice) {
+    public boolean doAttack(boolean playerOne, int choice, boolean silent) {
         Field f = playerOne ? playerOneF : playerTwoF;
         Field f2= playerOne ? playerTwoF : playerOneF;
         
@@ -212,15 +212,15 @@ public class State {
         //check for valid energy quantity.  If not enough, return false
         boolean good = Util.hasSufficientEnergy( f.pkmnSlots[0].determineEnergy(), p.getAttackCost(choice) );
         if (!good) {
-            System.out.println("Insufficient Energy for Attack");
+            if (!silent) System.out.println("Insufficient Energy for Attack");
             return false;
         }
         if (f2.pkmnSlots[0] == null) {
-            System.out.println("Opponent has No Active Pokemon");
+        	if (!silent) System.out.println("Opponent has No Active Pokemon");
             return false;
         }
         if (f.pkmnSlots[0].stat == Status.ASLEEP || f.pkmnSlots[0].stat == Status.PARALYZED) {
-            System.out.println("Status Prevents Attack - Turn Ending");
+        	if (!silent) System.out.println("Status Prevents Attack - Turn Ending");
             return true;
         }
         
@@ -311,7 +311,7 @@ public class State {
     //and reports back the number of faints.  Each player then draws prize cards.  This method returns
     //a number indicating if either player has won: 0 (no winner yet), 1 (player 1), 2 (player two),
     // 3 (draw)
-    public int checkPokemon() {
+    public int checkPokemon(boolean silent) {
         Field f = playerOneF;
         Field f2 = playerTwoF;
         
@@ -327,11 +327,11 @@ public class State {
         boolean hasActive1 = true;
         boolean hasActive2 = true;
         if (!f.hasActivePokemon()) {
-            System.out.println("Replacing Active Pokemon Randomly");
+        	if (!silent) System.out.println("Replacing Active Pokemon Randomly");
             hasActive1 = f.chooseRandomActivePkmn();
         }
         if (!f2.hasActivePokemon()) {
-            System.out.println("Replacing Active Pokemon Randomly");
+        	if (!silent) System.out.println("Replacing Active Pokemon Randomly");
             hasActive2 = f2.chooseRandomActivePkmn();
         }
         
@@ -430,8 +430,8 @@ public class State {
         } else if(cmd.startsWith("attack")) {
             //Single parameter {1 or 2} to decide which attack is used
             int choice = Integer.parseInt( cmd.substring("attack".length()).trim() );
-            if( this.doAttack(!cpuPlayer, choice) ) {
-            	contin = Util.evaluateCheckPokemon( this.checkPokemon() , silent );
+            if( this.doAttack(!cpuPlayer, choice, silent) ) {
+            	contin = Util.evaluateCheckPokemon( this.checkPokemon(silent) , silent );
             	if(contin) {
                 	//Handle ending the turn
                 	contin = Util.endTurnAction(this, cpuPlayer, silent);

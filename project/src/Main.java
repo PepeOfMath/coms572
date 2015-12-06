@@ -123,7 +123,7 @@ public class Main {
                  *   "switch ..."   switch the active Pokemon switch position#
                  *   "play ..."     play a card: play position# cardName
                  */
-                //TODO: maybe print game state before each action
+                //Maybe print game state before each action
             	Util.printBlock("CURRENT GAME STATE");
                 game.printState(!cpuPlayer, !cpuPlayer || cpuControl);
                 
@@ -132,7 +132,7 @@ public class Main {
                 if (cpuPlayer && !cpuControl) {
                     //TODO (high priority) have AI choose an action
                 	Util.printBlock("TODO: ask AI for action");
-                    cmd = agent.chooseAction(game, !cpuPlayer);
+                    cmd = agent.chooseAction(new State(game, !cpuPlayer, false), !cpuPlayer);
                     System.out.println("Theoretical Action: " + cmd);
                     //TODO: insert pause
                     cmd = "end turn";
@@ -144,7 +144,7 @@ public class Main {
                 //Do a quick validation of inputs first
                 if (!Util.validateCommand(cmd)) cmd = ""; //Makes it clearly invalid so no errors occur
                 
-                game.handleCommand(cmd, false);
+                game.handleCommand(cmd, false); //Silent is false so the user receives all extra info
                 contin = !game.gameOver;
                 cpuPlayer = !game.playerOneTurn;
                 /*
