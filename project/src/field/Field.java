@@ -60,6 +60,78 @@ public class Field {
         pkmnCount = 0;
     }
     
+    /**
+     * Duplicate the Field
+     * @param f
+     * @param exactCopy
+     * @param keepHand
+     */
+	@SuppressWarnings("unchecked")
+	public Field(Field f, boolean exactCopy, boolean keepHand) {
+    	//duplicate pkmnSlots, discard, unseenOp, deckCount, handCount, prizeCount, pkmnCount
+    	discard = (ArrayList<Card>)f.discard.clone();
+    	unseenOp = (ArrayList<Card>)f.unseenOp.clone();
+    	deckCount = f.deckCount;
+    	handCount = f.handCount;
+    	prizeCount = f.prizeCount;
+    	pkmnCount = f.pkmnCount;
+    	
+    	//copy Pokemon slots
+    	pkmnSlots = new Position[6];
+    	for (int i = 0; i < pkmnSlots.length; i++) {
+    		if(f.pkmnSlots[i] != null) {
+    			//Duplicate the Position
+    			pkmnSlots[i] = new Position(f.pkmnSlots[i]);
+    		}
+    	}
+		
+    	//copy the deck, hand, prizes as needed, configure unseenMe
+		if(exactCopy) {
+			//Duplicate Everything
+			deck = (ArrayList<Card>)f.deck.clone();
+			hand = (ArrayList<Card>)f.hand.clone();
+			prizes = (ArrayList<Card>)f.prizes.clone();
+			unseenMe = (ArrayList<Card>)f.unseenMe.clone();
+		} else {
+			if (keepHand) {
+				hand = (ArrayList<Card>)f.hand.clone();
+				unseenMe = (ArrayList<Card>)f.unseenMe.clone();
+				Collections.shuffle(unseenMe);
+				
+				//Just redraw the deck and prizes
+				deck = new ArrayList<Card>();
+				prizes = new ArrayList<Card>();
+				for (int i = 0; i < prizeCount; i++) {
+					prizes.add( unseenMe.get(i) );
+				}
+				for (int i = prizeCount; i < unseenMe.size(); i++) {
+					deck.add( unseenMe.get(i) );
+				}
+			} else {
+				//Redraw the deck, hand, and prizes
+				deck = new ArrayList<Card>();
+				prizes = new ArrayList<Card>();
+				hand = new ArrayList<Card>();
+				unseenMe = new ArrayList<Card>();
+				Collections.shuffle(unseenOp);
+				
+				//Now draw
+				for (int i = 0; i < prizeCount; i++) {
+					prizes.add( unseenOp.get(i) );
+					unseenMe.add( unseenOp.get(i) );
+				}
+				for (int i = prizeCount; i < prizeCount+handCount; i++) {
+					hand.add( unseenOp.get(i) );
+					unseenMe.add( unseenOp.get(i) );
+				}
+				for (int i = prizeCount+handCount; i < unseenOp.size(); i++) {
+					deck.add( unseenOp.get(i) );
+					deck.add( unseenOp.get(i) );
+				}
+			}
+		}
+    }
+    
     //This should never fail because it happens at the beginning of the game
     public boolean drawPrizeCards() {
         for (int i = 0; i < 6; i++) {
@@ -209,7 +281,10 @@ public class Field {
     public int drawPrizes(int rewards) {
         for (int i = 0; i < rewards; i++) {
             if (prizes.size() == 0) return i;
-            hand.add( prizes.remove( prizes.size()-1 ) );
+            Card c = prizes.remove( prizes.size()-1 );
+            hand.add( c );
+            unseenMe.remove( c );
+            //hand.add( prizes.remove( prizes.size()-1 ) );
             handCount++;
             prizeCount--;
         }
@@ -249,7 +324,10 @@ public class Field {
         if (c == 'E') {
             for (int i = 0; i < deck.size(); i++) {
                 if(deck.get(i) instanceof Energy) {
-                    hand.add( deck.remove(i) );
+                	Card cc = deck.remove(i);
+                	hand.add( cc );
+                	unseenMe.remove( cc );
+                    //hand.add( deck.remove(i) );
                     deckCount--;
                     handCount++;
                     Collections.shuffle(deck);
@@ -261,7 +339,10 @@ public class Field {
         } else if (c == 'V') {
             for (int i = 0; i < deck.size(); i++) {
                 if(deck.get(i) instanceof Pokemon && !((Pokemon)deck.get(i)).evolvesFrom.equals("Null")) {
-                    hand.add( deck.remove(i) );
+                    Card cc = deck.remove(i);
+                    hand.add( cc );
+                    unseenMe.remove( cc );
+                	//hand.add( deck.remove(i) );
                     deckCount--;
                     handCount++;
                     Collections.shuffle(deck);
@@ -280,7 +361,10 @@ public class Field {
         if (c == 'E') {
             for (int i =0; i < discard.size(); i++) {
                 if(discard.get(i) instanceof Energy) {
-                    hand.add( discard.remove(i) );
+                	Card cc = discard.remove(i);
+                	hand.add( cc );
+                	unseenOp.add( cc );
+                    //hand.add( discard.remove(i) );
                     handCount++;
                     return true;
                 }
@@ -288,7 +372,4 @@ public class Field {
         }
         return false;
     }
-    
-    //Get a random card from the deck and swap it with a random hand card
-    
 }

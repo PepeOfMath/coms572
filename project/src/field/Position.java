@@ -7,7 +7,7 @@ import java.util.Random;
 
 public class Position {
     
-    //The pokemon in this position
+    //The Pokemon in this position
     private ArrayList<Pokemon> pkmn;
     //The energies in this position
     private ArrayList<Energy> en;
@@ -19,7 +19,7 @@ public class Position {
 
     public Position(Pokemon p, int turnNumber) {
         if (p == null || !p.evolvesFrom.equals("Null")) {
-            //Not a basic pokemon
+            //Not a basic Pokemon
             throw new IllegalArgumentException("Not a basic pokemon");
         }
         pkmn = new ArrayList<Pokemon>(3);
@@ -29,6 +29,20 @@ public class Position {
         turnPlayed = turnNumber;
         damage = 0;
         r = new Random();
+    }
+    
+    /**
+     * Replicate an old Position object
+     * @param old The Position to duplicate
+     */
+    @SuppressWarnings("unchecked")
+	public Position(Position old) {
+    	damage = old.damage;
+    	r = old.r;
+    	turnPlayed = old.turnPlayed;
+    	stat = old.stat;
+    	pkmn = (ArrayList<Pokemon>)old.pkmn.clone();
+    	en = (ArrayList<Energy>)old.en.clone();
     }
     
     //Get the active (highest evolution) Pokemon in this position

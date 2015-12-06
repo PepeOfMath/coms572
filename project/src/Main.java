@@ -12,7 +12,6 @@ public class Main {
         String deckFilePath = "src/data/database.txt"; //TODO: for now, this path is hardcoded
         boolean cpuPlayer = false;
         boolean cpuControl= false;
-        int ctrlFlag = 2;
         String cmd;
         AI agent = new RandomPlAI(); //Instantiate AI here
         
@@ -229,6 +228,7 @@ public class Main {
             cmd = s.nextLine();
             if (cmd.toLowerCase().startsWith("n")) {
                 printBlock("Shutting Down");
+                s.close();
                 return;
             }
         }

@@ -44,6 +44,32 @@ public class State {
         performedSwitch = false;
     }
     
+    /**
+     * Duplicate the game State, with some potential modifications
+     * @param s	State to be duplicated
+     * @param playerOne Which player is currently active
+     * @param exactCopy Whether to create an exact copy, or a modified version for prediction purposes
+     */
+    public State(State s, boolean playerOne, boolean exactCopy) {
+    	//If exactCopy, duplicate everything from the two Fields exactly
+    	//If not,
+    	//For the current player, we copy the hand,discard exactly, and reshuffle/get the deck,prizes
+        //For the opponent, we copy discard exactly, and reshuffle/get the deck,hand,prizes
+    	playerOneF = new Field(s.playerOneF, exactCopy, playerOne);
+    	playerTwoF = new Field(s.playerTwoF, exactCopy, !playerOne);
+    		
+    	//Copy other variables as well
+    	turnCount = s.turnCount;
+    	playedEnergy = s.playedEnergy;
+    	playedSupporter = s.playedSupporter;
+    	performedSwitch = s.performedSwitch;
+    }
+    
+    /**
+     * Perform the initial draw for one player.  Return the number of attempts needed before a basic Pokemon was obtained.
+     * @param playerOne If the current player is playerOne or not
+     * @return Number of hand draw attempts needed
+     */
     public int initialDraw(boolean playerOne) {
         Field f = playerOne ? playerOneF : playerTwoF;
         int count = 0;
