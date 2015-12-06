@@ -156,6 +156,7 @@ public final class Util {
         if (s.startsWith("stop") || s.startsWith("end turn")) return true;
         if (s.startsWith("attack")) {
             //check that we have a numerical parameter next
+            if (s.length() == "attack".length()) return false; // no parameters
             s = s.substring("attack".length()).trim();
             try {
                 int k = Integer.parseInt(s);
@@ -166,9 +167,10 @@ public final class Util {
             }
         }
         if (s.startsWith("switch") || s.startsWith("play")) {
-            s = s.trim().split(" ")[1];
+            String[] split = s.trim().split(" ");
+            if (split.length == 1) return false;
             try {
-                Integer.parseInt(s);
+                Integer.parseInt(split[1]);
                 return true;
             } catch (NumberFormatException e) {
                 return false;

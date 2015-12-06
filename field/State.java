@@ -144,24 +144,26 @@ public class State {
         Field f = playerOne ? playerOneF : playerTwoF;
         //get the card
         Card c = f.findCardByName(name);
+        if (c == null) return false; //no such card
+        if (slotNum < 0 || slotNum > f.pkmnSlots.length) return false; //invalid slot number
         if (c instanceof Energy) {
             return playEnergy(playerOne, name, slotNum);
         } else if (c instanceof Trainer) {
-            System.out.println("Handling Trainer by Discarding - No Effect");
             Trainer t = (Trainer)f.findCardByName(name);
             if (t.isSupporter && playedSupporter) return false; //Can't play two supporters
+            
+            //We require the slot number to have a Pokemon in case the card has effects
+            if (f.pkmnSlots[slotNum] == null) return false; //Attempted to play on an invalid slot
             String e = t.cardEffect;
             //If the effect is valid, then we discard the card, else don't
             if (t.isSupporter) playedSupporter = true;
-            return f.playTrainer(t);
-            //TODO handle trainer cards
-            //Place the card correctly, and grab an Effect to deal with.  This could be complicated
+            boolean result = f.playTrainer(t);
+            if (result) doTrainerEffect(playerOne, slotNum, e);
+            return result;
         } else {//Pokemon Card
             if( ((Pokemon)c).evolvesFrom.equals("Null") ) { //Basic Pokemon
-                System.out.println("!!  Attempting to play " + name);
                 return playBasicPkmn(playerOne, name);
             } else { //Attempt to do an Evolution at the given slot
-                System.out.println("!!  Attempting to evolve to " + name);
                 return playEvolvPkmn(playerOne, name, slotNum);
             }
         }
@@ -223,7 +225,8 @@ public class State {
                     //Actually perform the effect
                     //Options: do damage, apply effect, discard energy
                     if (parts[2].equals("E")) {
-                        f2.discard.add( f2.pkmnSlots[0].removeRandomEnergy() );
+                        Energy e = f2.pkmnSlots[0].removeRandomEnergy();
+                        if (!(e == null) ) f2.discard.add( e );
                     } else {
                         try {
                             int amount = Integer.parseInt( parts[2] );

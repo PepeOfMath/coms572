@@ -86,7 +86,7 @@ public class Field {
     }
     
     public boolean doSwitch(int slotNum) {
-        if(slotNum < 0 || slotNum >= pkmnSlots.length) return false; //No such position
+        if(slotNum < 1 || slotNum >= pkmnSlots.length) return false; //No such position
         if(pkmnSlots[slotNum] == null) return false; //No pokemon to switch with
         Pokemon p = pkmnSlots[0].getPokemon();
         if(p.retreatCost > pkmnSlots[0].getEnergyCount()) return false;
@@ -94,7 +94,7 @@ public class Field {
         //The retreat is valid
         //Remove the necessary energies (remove from Slot, move to Discard)
         for( int i = 0; i < p.retreatCost; i++ ) {
-            discard.add( pkmnSlots[0].removeRandomEnergy() );
+            discard.add( pkmnSlots[0].removeRandomEnergy() ); //Should be safe from null
         }
         //Swap, remove any status conditions
         Position tmp = pkmnSlots[0];

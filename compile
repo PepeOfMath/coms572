@@ -1,1 +1,1 @@
-javac cards/*.java field/*.java util/*.java Main.java
+javac cards/*.java field/*.java util/*.java ai/*.java Main.java

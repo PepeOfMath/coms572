@@ -3,6 +3,7 @@
 import java.util.Scanner;
 import field.*;
 import util.*;
+import ai.*;
 
 public class Main {
     
@@ -13,6 +14,7 @@ public class Main {
         boolean cpuControl= false;
         int ctrlFlag = 2;
         String cmd;
+        AI agent = new RandomPlAI(); //Instantiate AI here
         
         printBlock("Press Enter to Begin");
         while(!s.hasNextLine());
@@ -29,7 +31,6 @@ public class Main {
                 cpuControl = true;
                 printBlock("Player is Controlling the Computer");
             } else {
-                printBlock("TODO: Instantiate AI");
             }
             
             
@@ -59,8 +60,6 @@ public class Main {
                 printBlock("TODO: Human may take up to " + 2*(humTries-cpuTries) + " bonus cards");
             }
             
-            //TODO (high priority)
-            //Idea: probably use heuristics here to choose 1-3 starting pokemon based on the hand
             printBlock("Player 1: Choose Basic Pokemon To Begin");
             printBlock("Enter one Pokemon Name at a Time; Use \"done\" to finish");
             game.printHand(true);
@@ -80,8 +79,9 @@ public class Main {
                 }
             }
             
-
-            if(cpuControl) {
+            //TODO (high priority)
+            //Idea: probably use heuristics here to choose 1-3 starting pokemon based on the hand
+            if(true /*cpuControl*/) {//TODO switch condition when ready
                 printBlock("Player 2: Choose Basic Pokemon To Begin");
                 printBlock("Enter one Pokemon Name at a Time; Use \"done\" to finish");
                 game.printHand(false);
@@ -101,7 +101,7 @@ public class Main {
                     }
                 }
             } else {
-                //TODO have user (or AI) choose pokemon for player 2
+                //TODO have AI choose pokemon
                 printBlock("TODO: AI Selects Basic Pokemon");
             }
             
@@ -120,9 +120,9 @@ public class Main {
                  * Current Actions:
                  *   "stop"         ends the game immediately
                  *   "end turn"     player ends turn, control switches, between turn effects happen
-                 *   "attack ..."   use an attack (exact syntax needs to be defined TODO)
-                 *   "switch ..."   switch the active pokemon (TODO exact syntax)
-                 *   "play ..."     play a card (TODO exact syntax)
+                 *   "attack ..."   use an attack attack # (1 or 2)
+                 *   "switch ..."   switch the active pokemon switch position#
+                 *   "play ..."     play a card: play position# cardName
                  */
                 //TODO: maybe print game state before each action
                 printBlock("CURRENT GAME STATE");
@@ -133,6 +133,8 @@ public class Main {
                 if (cpuPlayer && !cpuControl) {
                     //TODO (high priority) have AI choose an action
                     printBlock("TODO: ask AI for action");
+                    cmd = agent.chooseAction(game, !cpuPlayer);
+                    System.out.println("Theoretical Action: " + cmd);
                     cmd = "end turn";
                 } else {
                     while(!s.hasNextLine());
@@ -146,6 +148,7 @@ public class Main {
                 if(cmd.startsWith("stop")) {
                     printBlock("Terminating Game");
                     contin = false;
+                    
                 } else if(cmd.startsWith("end turn")) {
                     printBlock("Ending Turn");
                     //Toggle player control
@@ -162,6 +165,7 @@ public class Main {
                         contin = false;
                         printBlock("Player " + (cpuPlayer ? 1 : 2) + " Wins!");
                     }
+                    
                 } else if(cmd.startsWith("attack")) {
                     //Single parameter {1 or 2} to decide which attack is used
                     int choice = Integer.parseInt( cmd.substring("attack".length()).trim() );
@@ -193,6 +197,7 @@ public class Main {
                     } else {
                         printBlock("Invalid Switch");
                     }
+                    
                 } else if(cmd.startsWith("play")) {
                     //Extract the number parameter
                     //Extract the card name
@@ -205,8 +210,9 @@ public class Main {
                     } else {
                         printBlock("Invalid Play");
                     }
+                    
                 } else {
-                    printBlock("Unrecognized Command");
+                    printBlock("Invalid Action");
                 }
                 
                 

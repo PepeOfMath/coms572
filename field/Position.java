@@ -57,6 +57,7 @@ public class Position {
     }
     
     public Energy removeRandomEnergy() {
+        if (en.size() == 0) return null;
         return en.remove(r.nextInt(en.size()));
     }
     
