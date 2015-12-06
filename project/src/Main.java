@@ -133,9 +133,13 @@ public class Main {
                     //TODO (high priority) have AI choose an action
                 	Util.printBlock("TODO: ask AI for action");
                     cmd = agent.chooseAction(new State(game, !cpuPlayer, false), !cpuPlayer);
-                    System.out.println("Theoretical Action: " + cmd);
-                    //TODO: insert pause
-                    cmd = "end turn";
+                    
+                    //Display the command and insert a pause
+                    System.out.print(cmd);
+                    while(!s.hasNextLine());
+                    s.nextLine();
+
+                    //cmd = "end turn";
                 } else {
                     while(!s.hasNextLine());
                     cmd = s.nextLine().toLowerCase();
@@ -199,6 +203,8 @@ public class Main {
             }
             
             //Decide if we want to restart the game
+            Util.printBlock("FINAL GAME STATE");
+            game.printState(!cpuPlayer, !cpuPlayer || cpuControl);
             Util.printBlock("Would you like to play a new game? (Y/N)");
             Util.prompt(cpuPlayer);
             while(!s.hasNextLine());

@@ -362,7 +362,7 @@ public class State {
         //Player One Information
         System.out.println("");
         System.out.println("Player 1");
-        System.out.println("-----------------------------------------");
+        System.out.println("----------------------------------------------");
         System.out.println("Deck: " + playerOneF.deckCount + "  Hand: " + playerOneF.handCount + "  Prize: " + playerOneF.prizeCount + "  Discard: " + playerOneF.discard.size());
         System.out.println("Field:");
         for (int i = 0; i < playerOneF.pkmnSlots.length; i++) {
@@ -383,7 +383,7 @@ public class State {
         //Player Two Information
         System.out.println("");
         System.out.println("Player 2");
-        System.out.println("-----------------------------------------");
+        System.out.println("----------------------------------------------");
         System.out.println("Deck: " + playerTwoF.deckCount + "  Hand: " + playerTwoF.handCount + "  Prize: " + playerTwoF.prizeCount + "  Discard: " + playerTwoF.discard.size());
         System.out.println("Field:");
         for (int i = 0; i < playerTwoF.pkmnSlots.length; i++) {
@@ -413,6 +413,11 @@ public class State {
         performedSwitch = false;
     }
     
+    /**
+     * Process a command
+     * @param cmd The command to process
+     * @param silent True indicates not to print any info statements
+     */
     public void handleCommand(String cmd, boolean silent) {
     	//Temporary variables to support the copy/paste
     	boolean contin = true;
@@ -472,22 +477,47 @@ public class State {
         playerOneTurn = !cpuPlayer;
     }
     
-    /**
-     * Generate a list of possible moves for the given player
-     * @param playerOne The current player
-     * @return List of moves
-     */
-    public ArrayList<String> getAllMoves(boolean playerOne) {
+    //Get only valid switch commands
+    public ArrayList<String> getAllSwitchMoves(boolean playerOne) {
     	ArrayList<String> commands = new ArrayList<String>();
     	Field f = playerOne ? playerOneF : playerTwoF;
     	Pokemon p = f.pkmnSlots[0].getPokemon();
     	
-    	//Play card: (this is going to be tricky)
+    	//Switches (check energy requirements, add only for other benched pokemon)
+    	if (!performedSwitch && p.retreatCost <= f.pkmnSlots[0].getEnergyCount()) {
+    		for (int i = 1; i < f.pkmnSlots.length; i++) {
+    			if (f.pkmnSlots[i] != null) commands.add("switch " + i);
+    		}
+    	}
+    	
+    	return commands;
+    }
+    
+    //Get only valid attack commands
+    public ArrayList<String> getAllAttackMoves(boolean playerOne) {
+    	ArrayList<String> commands = new ArrayList<String>();
+    	Field f = playerOne ? playerOneF : playerTwoF;
+    	Pokemon p = f.pkmnSlots[0].getPokemon();
+    	
+    	//Attacks: check energy requirements before adding the command
+        if ( Util.hasSufficientEnergy( f.pkmnSlots[0].determineEnergy(), p.getAttackCost(1) ) ) commands.add("attack 1");
+        if ( Util.hasSufficientEnergy( f.pkmnSlots[0].determineEnergy(), p.getAttackCost(2) ) ) commands.add("attack 2");
+        
+        return commands;
+    }
+    
+    //Get only valid play commands
+    public ArrayList<String> getAllPlayMoves(boolean playerOne) {
+    	ArrayList<String> commands = new ArrayList<String>();
+    	Field f = playerOne ? playerOneF : playerTwoF;
+    	Pokemon p = f.pkmnSlots[0].getPokemon();
+    	
+    	//Play card
     	for (int i = 0; i < f.handCount; i++) {
     		Card c = f.hand.get(i);
     		if (c instanceof Energy && !playedEnergy) {
         		for (int j = 0; j < f.pkmnSlots.length; j++) {
-        			if (f.pkmnSlots[j] != null) commands.add("play " + i + " " + c.name);
+        			if (f.pkmnSlots[j] != null) commands.add("play " + j + " " + c.name);
         		}
     		} else if (c instanceof Trainer) {
     			Trainer t = (Trainer)c;
@@ -496,7 +526,7 @@ public class State {
     					commands.add("play 0 " + c.name);
     				} else {
     					for (int j = 0; j < f.pkmnSlots.length; j++) {
-    	        			if (f.pkmnSlots[j] != null) commands.add("play " + i + " " + c.name);
+    	        			if (f.pkmnSlots[j] != null) commands.add("play " + j + " " + c.name);
     	        		}
     				}
     			}
@@ -507,14 +537,58 @@ public class State {
     			} else if ( !p2.isBasic() ) {
     				for (int j = 0; j < f.pkmnSlots.length; j++) {
     					//Check if the Pokemon can be evolved
-    					if (f.pkmnSlots[j] != null && f.pkmnSlots[j].canEvolveWith(p2, turnCount)) commands.add("play " + i + " " + c.name);
+    					if (f.pkmnSlots[j] != null && f.pkmnSlots[j].canEvolveWith(p2, turnCount)) commands.add("play " + j + " " + c.name);
+    				}
+    			}
+    		}
+    	}
+    	
+    	return commands;
+    }
+    
+    /**
+     * Generate a list of possible moves for the given player
+     * @param playerOne The current player
+     * @return List of moves
+     */
+    public ArrayList<String> getAllMoves(boolean playerOne) {
+    	ArrayList<String> commands = new ArrayList<String>();
+    	Field f = playerOne ? playerOneF : playerTwoF;
+    	Pokemon p = f.pkmnSlots[0].getPokemon();
+    	
+    	//Play card
+    	for (int i = 0; i < f.handCount; i++) {
+    		Card c = f.hand.get(i);
+    		if (c instanceof Energy && !playedEnergy) {
+        		for (int j = 0; j < f.pkmnSlots.length; j++) {
+        			if (f.pkmnSlots[j] != null) commands.add("play " + j + " " + c.name);
+        		}
+    		} else if (c instanceof Trainer) {
+    			Trainer t = (Trainer)c;
+    			if (!(t.isSupporter && playedSupporter)) {
+    				if (!t.targetsPokemon) {
+    					commands.add("play 0 " + c.name);
+    				} else {
+    					for (int j = 0; j < f.pkmnSlots.length; j++) {
+    	        			if (f.pkmnSlots[j] != null) commands.add("play " + j + " " + c.name);
+    	        		}
+    				}
+    			}
+    		} else if (c instanceof Pokemon) {
+    			Pokemon p2 = (Pokemon)c;
+    			if ( p2.isBasic() && (f.pkmnCount < f.pkmnSlots.length) ) {
+    				commands.add("play 0 " + p2.name);
+    			} else if ( !p2.isBasic() ) {
+    				for (int j = 0; j < f.pkmnSlots.length; j++) {
+    					//Check if the Pokemon can be evolved
+    					if (f.pkmnSlots[j] != null && f.pkmnSlots[j].canEvolveWith(p2, turnCount)) commands.add("play " + j + " " + c.name);
     				}
     			}
     		}
     	}
     	
     	//Switches (check energy requirements, add only for other benched pokemon)
-    	if (!performedSwitch && p.retreatCost > f.pkmnSlots[0].getEnergyCount()) {
+    	if (!performedSwitch && p.retreatCost <= f.pkmnSlots[0].getEnergyCount()) {
     		for (int i = 1; i < f.pkmnSlots.length; i++) {
     			if (f.pkmnSlots[i] != null) commands.add("switch " + i);
     		}
