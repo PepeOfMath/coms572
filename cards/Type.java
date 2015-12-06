@@ -1,5 +1,0 @@
-package cards;
-
-public enum Type {
-    DARK, PSYCHIC, COLORLESS, WATER, GRASS, FIRE, FIGHTING, STEEL, FAIRY, DRAGON, ELECTRIC, NONE, EFFECT
-}
