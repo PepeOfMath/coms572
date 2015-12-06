@@ -36,6 +36,9 @@ public class State {
     public boolean playedSupporter;
     public boolean performedSwitch;
     
+    public boolean playerOneTurn;
+    public boolean gameOver;
+    
     public State(String p1DeckFile, String p2DeckFile) {
         playerOneF = new Field(p1DeckFile);
         playerTwoF = new Field(p2DeckFile);
@@ -44,6 +47,9 @@ public class State {
         playedEnergy = false;
         playedSupporter = false;
         performedSwitch = false;
+        
+        playerOneTurn = true;
+        gameOver = false;
     }
     
     /**
@@ -65,6 +71,9 @@ public class State {
     	playedEnergy = s.playedEnergy;
     	playedSupporter = s.playedSupporter;
     	performedSwitch = s.performedSwitch;
+    	
+    	playerOneTurn = s.playerOneTurn;
+    	gameOver = s.gameOver;
     }
     
     /**
@@ -402,6 +411,65 @@ public class State {
         playedEnergy = false;
         playedSupporter = false;
         performedSwitch = false;
+    }
+    
+    public void handleCommand(String cmd, boolean silent) {
+    	//Temporary variables to support the copy/paste
+    	boolean contin = true;
+    	boolean cpuPlayer = !playerOneTurn;
+    	
+    	//Read and execute the command.
+        if(cmd.startsWith("stop")) {
+        	if (!silent) Util.printBlock("Terminating Game");
+            contin = false;
+            
+        } else if(cmd.startsWith("end turn")) {
+        	contin = Util.endTurnAction(this, cpuPlayer, silent);
+        	cpuPlayer = !cpuPlayer;
+            
+        } else if(cmd.startsWith("attack")) {
+            //Single parameter {1 or 2} to decide which attack is used
+            int choice = Integer.parseInt( cmd.substring("attack".length()).trim() );
+            if( this.doAttack(!cpuPlayer, choice) ) {
+            	contin = Util.evaluateCheckPokemon( this.checkPokemon() , silent );
+            	if(contin) {
+                	//Handle ending the turn
+                	contin = Util.endTurnAction(this, cpuPlayer, silent);
+                	cpuPlayer = !cpuPlayer;
+            	}
+            } else {
+            	if (!silent) Util.printBlock("Invalid Attack");
+            }
+            
+        } else if(cmd.startsWith("switch")) {
+            //Extract a numerical parameter between 1-5 indicating the position to switch to
+            int slotNum = Integer.parseInt( cmd.substring("switch".length()).trim() );
+            if (this.doSwitch(!cpuPlayer, slotNum)) {
+            	if (!silent) Util.printBlock("Switched Active Pokemon");
+            } else {
+            	if (!silent) Util.printBlock("Invalid Switch");
+            }
+            
+        } else if(cmd.startsWith("play")) {
+            //Extract the number parameter
+            //Extract the card name
+            String trimmed = cmd.substring("play".length()).trim();
+            int val = trimmed.indexOf(" "); //May not be relevant for some cards
+            int slotNum = Integer.parseInt( trimmed.substring(0,val) );
+            String cardName = trimmed.substring(val).trim();
+            if (this.playCard(!cpuPlayer, cardName, slotNum)) {
+            	if (!silent) Util.printBlock("Played Card " + cardName);
+            } else {
+            	if (!silent) Util.printBlock("Invalid Play");
+            }
+            
+        } else {
+        	if (!silent) Util.printBlock("Invalid Action");
+        }
+        
+        //Re-update the State variables
+        gameOver = !contin;
+        playerOneTurn = !cpuPlayer;
     }
     
     /**

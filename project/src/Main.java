@@ -134,6 +134,7 @@ public class Main {
                 	Util.printBlock("TODO: ask AI for action");
                     cmd = agent.chooseAction(game, !cpuPlayer);
                     System.out.println("Theoretical Action: " + cmd);
+                    //TODO: insert pause
                     cmd = "end turn";
                 } else {
                     while(!s.hasNextLine());
@@ -143,46 +144,29 @@ public class Main {
                 //Do a quick validation of inputs first
                 if (!Util.validateCommand(cmd)) cmd = ""; //Makes it clearly invalid so no errors occur
                 
+                game.handleCommand(cmd, false);
+                contin = !game.gameOver;
+                cpuPlayer = !game.playerOneTurn;
+                /*
                 //Read and execute the command.
                 if(cmd.startsWith("stop")) {
                 	Util.printBlock("Terminating Game");
                     contin = false;
                     
                 } else if(cmd.startsWith("end turn")) {
-                	Util.printBlock("Ending Turn");
-                    //Toggle player control
-                    cpuPlayer = !cpuPlayer;
-                    
-                    //Handle between turn effects
-                    game.processStatus(!cpuPlayer);
-                    contin = Util.evaluateCheckPokemon( game.checkPokemon() );
-                    
-                    //Begin next player's turn
-                    game.resetSwitches(cpuPlayer);
-                    int ncard = game.drawCardsToHand(!cpuPlayer, 1);
-                    if (ncard == 0) { //The current player loses, and the game ends
-                        contin = false;
-                        Util.printBlock("Player " + (cpuPlayer ? 1 : 2) + " Wins!");
-                    }
+                	contin = Util.endTurnAction(game, cpuPlayer);
+                	cpuPlayer = !cpuPlayer;
                     
                 } else if(cmd.startsWith("attack")) {
                     //Single parameter {1 or 2} to decide which attack is used
                     int choice = Integer.parseInt( cmd.substring("attack".length()).trim() );
                     if( game.doAttack(!cpuPlayer, choice) ) {
-                        //Toggle Player control
-                        cpuPlayer = !cpuPlayer;
-                        
-                        //Handle between turn effects
-                        game.processStatus(!cpuPlayer);
-                        contin = Util.evaluateCheckPokemon( game.checkPokemon() );
-                        
-                        //Begin next player's turn
-                        game.resetSwitches(cpuPlayer);
-                        int ncard = game.drawCardsToHand(!cpuPlayer, 1);
-                        if (ncard == 0) { //The current player loses, and the game ends
-                            contin = false;
-                            Util.printBlock("Player " + (cpuPlayer ? 1 : 2) + " Wins!");
-                        }
+                    	contin = Util.evaluateCheckPokemon( game.checkPokemon() );
+                    	if(contin) {
+	                    	//Handle ending the turn
+	                    	contin = Util.endTurnAction(game, cpuPlayer);
+	                    	cpuPlayer = !cpuPlayer;
+                    	}
                     } else {
                     	Util.printBlock("Invalid Attack");
                     }
@@ -211,7 +195,7 @@ public class Main {
                     
                 } else {
                 	Util.printBlock("Invalid Action");
-                }
+                }*/
             }
             
             //Decide if we want to restart the game

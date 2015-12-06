@@ -5,6 +5,7 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import cards.*;
 import java.io.File;
+import field.*;
 
 public final class Util {
 
@@ -188,15 +189,15 @@ public final class Util {
     
     //Return true if the result indicates that the game should continue
     //Also print any relevant messages
-    public static boolean evaluateCheckPokemon(int result) {
+    public static boolean evaluateCheckPokemon(int result, boolean silent) {
         if (result == Util.PLAYER_ONE_WIN) {
-            Util.printBlock("Player 1 Wins!");
+            if (!silent) Util.printBlock("Player 1 Wins!");
             return false;
         } else if (result == Util.PLAYER_TWO_WIN) {
-        	Util.printBlock("Player 2 Wins!");
+        	if (!silent) Util.printBlock("Player 2 Wins!");
             return false;
         } else if (result == Util.GAME_DRAW) {
-        	Util.printBlock("Game Ends in a Draw");
+        	if (!silent) Util.printBlock("Game Ends in a Draw");
             return false;
         }
         return true;
@@ -208,6 +209,32 @@ public final class Util {
         } else {
             System.out.print("Hu  >> ");
         }
+    }
     
+    /**
+     * Applies the "end turn" action and returns whether play should continue
+     * @param game The State object
+     * @param cpuPlayer If the current player is the CPU player
+     * @return True if play should continue
+     */
+    public static boolean endTurnAction(State game, boolean cpuPlayer, boolean silent) {
+    	boolean contin;
+    	if (!silent) Util.printBlock("Ending Turn");
+        //Toggle player control
+        cpuPlayer = !cpuPlayer;
+        
+        //Handle between turn effects
+        game.processStatus(!cpuPlayer);
+        contin = Util.evaluateCheckPokemon( game.checkPokemon() , silent);
+        
+        //Begin next player's turn
+        game.resetSwitches(cpuPlayer);
+        int ncard = game.drawCardsToHand(!cpuPlayer, 1);
+        if (ncard == 0) { //The current player loses, and the game ends
+            contin = false;
+            if (!silent) Util.printBlock("Player " + (cpuPlayer ? 1 : 2) + " Wins!");
+        }
+        
+        return contin;
     }
 }
