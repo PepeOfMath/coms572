@@ -18,7 +18,6 @@ package field;
  * structure which keeps track of this information
  */
  
-import java.util.ArrayList;
 import java.util.Collections;
 import cards.*;
 import util.*;
@@ -31,7 +30,6 @@ public class State {
     public Field playerOneF; //The human player, for now
     public Field playerTwoF; //The cpu player, for now
     public int turnCount;
-    private boolean toIncrement; //Used to increment turnCount only every other turn
     public boolean playedEnergy; //Three toggles which should reset on each turn
     public boolean playedSupporter;
     public boolean performedSwitch;
@@ -40,7 +38,6 @@ public class State {
         playerOneF = new Field(p1DeckFile);
         playerTwoF = new Field(p2DeckFile);
         turnCount = 0;
-        toIncrement = false;
         
         playedEnergy = false;
         playedSupporter = false;
@@ -286,8 +283,8 @@ public class State {
         int faint2 = f2.checkPokemon();
         
         //Draw Prize Cards
-        int prize1 = f.drawPrizes(faint2);
-        int prize2 = f2.drawPrizes(faint1);
+        f.drawPrizes(faint2);
+        f2.drawPrizes(faint1);
         
         //If No Active Pokemon, Attempt to Replace
         boolean hasActive1 = true;
