@@ -25,19 +25,18 @@ public class RandomPlAI extends AI{
     //Choose a random action
     public String chooseAction(State s) {
     	ArrayList<String> cmds;
-    	boolean player = s.playerOneTurn;
     	
     	double value = r.nextDouble();
     	if (value < 0.05) {
     		return "end turn";
     	} else if (value < 0.2) {
-    		cmds = s.getAllSwitchMoves(player);
+    		cmds = s.getAllSwitchMoves();
     		return (cmds.size() == 0) ? chooseAction(s) : cmds.get( r.nextInt(cmds.size()) );
     	} else if (value < 0.4) {
-    		cmds = s.getAllAttackMoves(player);
+    		cmds = s.getAllAttackMoves();
     		return (cmds.size() == 0) ? chooseAction(s) : cmds.get( r.nextInt(cmds.size()) );
     	} else {
-    		cmds = s.getAllPlayMoves(player);
+    		cmds = s.getAllPlayMoves();
     		return (cmds.size() == 0) ? chooseAction(s) : cmds.get( r.nextInt(cmds.size()) );
     	}
     }

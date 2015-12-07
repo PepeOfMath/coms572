@@ -37,7 +37,8 @@ public class State {
     public boolean performedSwitch;
     
     public boolean playerOneTurn;
-    public boolean gameOver;
+    private boolean gameOver;
+    private int winner;
     
     public State(String p1DeckFile, String p2DeckFile) {
         playerOneF = new Field(p1DeckFile);
@@ -50,6 +51,7 @@ public class State {
         
         playerOneTurn = true;
         gameOver = false;
+        winner = 0;
     }
     
     /**
@@ -338,8 +340,8 @@ public class State {
         int pOneWin = (f.prizeCount == 0 || !hasActive2) ? 1 : 0;
         int pTwoWin = (f2.prizeCount == 0 || !hasActive1) ? 2 : 0;
         //If Either Player has No Active Pokemon or No Prizes, we can declare End of Game (interpret)
+        winner = pOneWin + pTwoWin;
         return pOneWin + pTwoWin;
-    
     }
     
     public void processStatus(boolean playerOne) {
@@ -405,7 +407,7 @@ public class State {
     }
 
     //Reset the set of switch variables
-    public void resetSwitches(boolean playerOne) {
+    private void resetSwitches(boolean playerOne) {
         Field f = playerOne ? playerOneF : playerTwoF;
         f.turnCount++;
         playedEnergy = false;
@@ -429,7 +431,7 @@ public class State {
             contin = false;
             
         } else if(cmd.startsWith("end turn")) {
-        	contin = Util.endTurnAction(this, cpuPlayer, silent);
+        	contin = endTurnAction(cpuPlayer, silent);
         	cpuPlayer = !cpuPlayer;
             
         } else if(cmd.startsWith("attack")) {
@@ -439,7 +441,7 @@ public class State {
             	contin = Util.evaluateCheckPokemon( this.checkPokemon(silent) , silent );
             	if(contin) {
                 	//Handle ending the turn
-                	contin = Util.endTurnAction(this, cpuPlayer, silent);
+                	contin = endTurnAction(cpuPlayer, silent);
                 	cpuPlayer = !cpuPlayer;
             	}
             } else {
@@ -477,10 +479,10 @@ public class State {
         playerOneTurn = !cpuPlayer;
     }
     
-    //Get only valid switch commands
-    public ArrayList<String> getAllSwitchMoves(boolean playerOne) {
+    //Get only valid switch commands for the current player
+    public ArrayList<String> getAllSwitchMoves() {
     	ArrayList<String> commands = new ArrayList<String>();
-    	Field f = playerOne ? playerOneF : playerTwoF;
+    	Field f = playerOneTurn ? playerOneF : playerTwoF;
     	Pokemon p = f.pkmnSlots[0].getPokemon();
     	
     	//Switches (check energy requirements, add only for other benched pokemon)
@@ -493,10 +495,10 @@ public class State {
     	return commands;
     }
     
-    //Get only valid attack commands
-    public ArrayList<String> getAllAttackMoves(boolean playerOne) {
+    //Get only valid attack commands for the current player
+    public ArrayList<String> getAllAttackMoves() {
     	ArrayList<String> commands = new ArrayList<String>();
-    	Field f = playerOne ? playerOneF : playerTwoF;
+    	Field f = playerOneTurn ? playerOneF : playerTwoF;
     	Pokemon p = f.pkmnSlots[0].getPokemon();
     	
     	//Attacks: check energy requirements before adding the command
@@ -506,10 +508,10 @@ public class State {
         return commands;
     }
     
-    //Get only valid play commands
-    public ArrayList<String> getAllPlayMoves(boolean playerOne) {
+    //Get only valid play commands for the current player
+    public ArrayList<String> getAllPlayMoves() {
     	ArrayList<String> commands = new ArrayList<String>();
-    	Field f = playerOne ? playerOneF : playerTwoF;
+    	Field f = playerOneTurn ? playerOneF : playerTwoF;
     	Pokemon p = f.pkmnSlots[0].getPokemon();
     	
     	//Play card
@@ -547,13 +549,12 @@ public class State {
     }
     
     /**
-     * Generate a list of possible moves for the given player
-     * @param playerOne The current player
+     * Generate a list of possible moves for the current player
      * @return List of moves
      */
-    public ArrayList<String> getAllMoves(boolean playerOne) {
+    public ArrayList<String> getAllMoves() {
     	ArrayList<String> commands = new ArrayList<String>();
-    	Field f = playerOne ? playerOneF : playerTwoF;
+    	Field f = playerOneTurn ? playerOneF : playerTwoF;
     	Pokemon p = f.pkmnSlots[0].getPokemon();
     	
     	//Play card
@@ -609,5 +610,45 @@ public class State {
     	Field f = playerOneTurn ? playerOneF : playerTwoF;
     	Field f2 = playerOneTurn ? playerTwoF : playerOneF;
     	return f.evaluateField() - f2.evaluateField();
+    }
+    
+    /**
+     * Applies the "end turn" action and returns whether play should continue
+     * @param game The State object
+     * @param cpuPlayer If the current player is the CPU player
+     * @return True if play should continue
+     */
+    private boolean endTurnAction(boolean cpuPlayer, boolean silent) {
+    	boolean contin;
+    	if (!silent) Util.printBlock("Ending Turn");
+        //Toggle player control
+        cpuPlayer = !cpuPlayer;
+        
+        //Handle between turn effects
+        processStatus(!cpuPlayer);
+        contin = Util.evaluateCheckPokemon( checkPokemon(silent) , silent);
+        
+        //Begin next player's turn
+        resetSwitches(cpuPlayer);
+        int ncard = drawCardsToHand(!cpuPlayer, 1);
+        if (ncard == 0) { //The current player loses, and the game ends
+            contin = false;
+            if (!silent) Util.printBlock("Player " + (cpuPlayer ? 1 : 2) + " Wins!");
+            winner = (cpuPlayer ? 1 : 2);
+        }
+        
+        return contin;
+    }
+    
+    public boolean isGameOver() {
+    	return gameOver;
+    }
+    
+    public boolean isDraw() {
+    	return (winner == Util.GAME_DRAW);
+    }
+    
+    public int getGameResult() {
+    	return winner;
     }
 }

@@ -25,8 +25,6 @@ public final class Util {
      * Creates an ArrayList<Card> of cards from the provided database
      */
     public static ArrayList<Card> readCardDatabase(String s) {
-        System.out.println("Reading Cards.  TODO: handle attack and trainer effects");
-        
         String prefix = System.getProperty("user.dir") + File.separator;
         File f = new File(prefix + s);
         Scanner scan;
@@ -203,38 +201,11 @@ public final class Util {
         return true;
     }
     
-    public static void prompt(boolean cpuPlayer) {
-        if (cpuPlayer) {
-            System.out.print("CPU >> ");
+    public static void prompt(boolean playerOne) {
+        if (playerOne) {
+            System.out.print("P1 >> ");
         } else {
-            System.out.print("Hu  >> ");
+            System.out.print("P2 >> ");
         }
-    }
-    
-    /**
-     * Applies the "end turn" action and returns whether play should continue
-     * @param game The State object
-     * @param cpuPlayer If the current player is the CPU player
-     * @return True if play should continue
-     */
-    public static boolean endTurnAction(State game, boolean cpuPlayer, boolean silent) {
-    	boolean contin;
-    	if (!silent) Util.printBlock("Ending Turn");
-        //Toggle player control
-        cpuPlayer = !cpuPlayer;
-        
-        //Handle between turn effects
-        game.processStatus(!cpuPlayer);
-        contin = Util.evaluateCheckPokemon( game.checkPokemon(silent) , silent);
-        
-        //Begin next player's turn
-        game.resetSwitches(cpuPlayer);
-        int ncard = game.drawCardsToHand(!cpuPlayer, 1);
-        if (ncard == 0) { //The current player loses, and the game ends
-            contin = false;
-            if (!silent) Util.printBlock("Player " + (cpuPlayer ? 1 : 2) + " Wins!");
-        }
-        
-        return contin;
     }
 }
