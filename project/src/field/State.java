@@ -36,6 +36,9 @@ public class State {
     public boolean playedSupporter;
     public boolean performedSwitch;
     
+    public boolean playerOneTurn;
+    public boolean gameOver;
+    
     public State(String p1DeckFile, String p2DeckFile) {
         playerOneF = new Field(p1DeckFile);
         playerTwoF = new Field(p2DeckFile);
@@ -44,6 +47,9 @@ public class State {
         playedEnergy = false;
         playedSupporter = false;
         performedSwitch = false;
+        
+        playerOneTurn = true;
+        gameOver = false;
     }
     
     /**
@@ -65,6 +71,9 @@ public class State {
     	playedEnergy = s.playedEnergy;
     	playedSupporter = s.playedSupporter;
     	performedSwitch = s.performedSwitch;
+    	
+    	playerOneTurn = s.playerOneTurn;
+    	gameOver = s.gameOver;
     }
     
     /**
@@ -195,7 +204,7 @@ public class State {
     }
     
     //Handle using an Attack
-    public boolean doAttack(boolean playerOne, int choice) {
+    public boolean doAttack(boolean playerOne, int choice, boolean silent) {
         Field f = playerOne ? playerOneF : playerTwoF;
         Field f2= playerOne ? playerTwoF : playerOneF;
         
@@ -203,15 +212,15 @@ public class State {
         //check for valid energy quantity.  If not enough, return false
         boolean good = Util.hasSufficientEnergy( f.pkmnSlots[0].determineEnergy(), p.getAttackCost(choice) );
         if (!good) {
-            System.out.println("Insufficient Energy for Attack");
+            if (!silent) System.out.println("Insufficient Energy for Attack");
             return false;
         }
         if (f2.pkmnSlots[0] == null) {
-            System.out.println("Opponent has No Active Pokemon");
+        	if (!silent) System.out.println("Opponent has No Active Pokemon");
             return false;
         }
         if (f.pkmnSlots[0].stat == Status.ASLEEP || f.pkmnSlots[0].stat == Status.PARALYZED) {
-            System.out.println("Status Prevents Attack - Turn Ending");
+        	if (!silent) System.out.println("Status Prevents Attack - Turn Ending");
             return true;
         }
         
@@ -302,7 +311,7 @@ public class State {
     //and reports back the number of faints.  Each player then draws prize cards.  This method returns
     //a number indicating if either player has won: 0 (no winner yet), 1 (player 1), 2 (player two),
     // 3 (draw)
-    public int checkPokemon() {
+    public int checkPokemon(boolean silent) {
         Field f = playerOneF;
         Field f2 = playerTwoF;
         
@@ -318,11 +327,11 @@ public class State {
         boolean hasActive1 = true;
         boolean hasActive2 = true;
         if (!f.hasActivePokemon()) {
-            System.out.println("Replacing Active Pokemon Randomly");
+        	if (!silent) System.out.println("Replacing Active Pokemon Randomly");
             hasActive1 = f.chooseRandomActivePkmn();
         }
         if (!f2.hasActivePokemon()) {
-            System.out.println("Replacing Active Pokemon Randomly");
+        	if (!silent) System.out.println("Replacing Active Pokemon Randomly");
             hasActive2 = f2.chooseRandomActivePkmn();
         }
         
@@ -353,7 +362,7 @@ public class State {
         //Player One Information
         System.out.println("");
         System.out.println("Player 1");
-        System.out.println("-----------------------------------------");
+        System.out.println("----------------------------------------------");
         System.out.println("Deck: " + playerOneF.deckCount + "  Hand: " + playerOneF.handCount + "  Prize: " + playerOneF.prizeCount + "  Discard: " + playerOneF.discard.size());
         System.out.println("Field:");
         for (int i = 0; i < playerOneF.pkmnSlots.length; i++) {
@@ -374,7 +383,7 @@ public class State {
         //Player Two Information
         System.out.println("");
         System.out.println("Player 2");
-        System.out.println("-----------------------------------------");
+        System.out.println("----------------------------------------------");
         System.out.println("Deck: " + playerTwoF.deckCount + "  Hand: " + playerTwoF.handCount + "  Prize: " + playerTwoF.prizeCount + "  Discard: " + playerTwoF.discard.size());
         System.out.println("Field:");
         for (int i = 0; i < playerTwoF.pkmnSlots.length; i++) {
@@ -405,21 +414,110 @@ public class State {
     }
     
     /**
-     * Generate a list of possible moves for the given player
-     * @param playerOne The current player
-     * @return List of moves
+     * Process a command
+     * @param cmd The command to process
+     * @param silent True indicates not to print any info statements
      */
-    public ArrayList<String> getAllMoves(boolean playerOne) {
+    public void handleCommand(String cmd, boolean silent) {
+    	//Temporary variables to support the copy/paste
+    	boolean contin = true;
+    	boolean cpuPlayer = !playerOneTurn;
+    	
+    	//Read and execute the command.
+        if(cmd.startsWith("stop")) {
+        	if (!silent) Util.printBlock("Terminating Game");
+            contin = false;
+            
+        } else if(cmd.startsWith("end turn")) {
+        	contin = Util.endTurnAction(this, cpuPlayer, silent);
+        	cpuPlayer = !cpuPlayer;
+            
+        } else if(cmd.startsWith("attack")) {
+            //Single parameter {1 or 2} to decide which attack is used
+            int choice = Integer.parseInt( cmd.substring("attack".length()).trim() );
+            if( this.doAttack(!cpuPlayer, choice, silent) ) {
+            	contin = Util.evaluateCheckPokemon( this.checkPokemon(silent) , silent );
+            	if(contin) {
+                	//Handle ending the turn
+                	contin = Util.endTurnAction(this, cpuPlayer, silent);
+                	cpuPlayer = !cpuPlayer;
+            	}
+            } else {
+            	if (!silent) Util.printBlock("Invalid Attack");
+            }
+            
+        } else if(cmd.startsWith("switch")) {
+            //Extract a numerical parameter between 1-5 indicating the position to switch to
+            int slotNum = Integer.parseInt( cmd.substring("switch".length()).trim() );
+            if (this.doSwitch(!cpuPlayer, slotNum)) {
+            	if (!silent) Util.printBlock("Switched Active Pokemon");
+            } else {
+            	if (!silent) Util.printBlock("Invalid Switch");
+            }
+            
+        } else if(cmd.startsWith("play")) {
+            //Extract the number parameter
+            //Extract the card name
+            String trimmed = cmd.substring("play".length()).trim();
+            int val = trimmed.indexOf(" "); //May not be relevant for some cards
+            int slotNum = Integer.parseInt( trimmed.substring(0,val) );
+            String cardName = trimmed.substring(val).trim();
+            if (this.playCard(!cpuPlayer, cardName, slotNum)) {
+            	if (!silent) Util.printBlock("Played Card " + cardName);
+            } else {
+            	if (!silent) Util.printBlock("Invalid Play");
+            }
+            
+        } else {
+        	if (!silent) Util.printBlock("Invalid Action");
+        }
+        
+        //Re-update the State variables
+        gameOver = !contin;
+        playerOneTurn = !cpuPlayer;
+    }
+    
+    //Get only valid switch commands
+    public ArrayList<String> getAllSwitchMoves(boolean playerOne) {
     	ArrayList<String> commands = new ArrayList<String>();
     	Field f = playerOne ? playerOneF : playerTwoF;
     	Pokemon p = f.pkmnSlots[0].getPokemon();
     	
-    	//Play card: (this is going to be tricky)
+    	//Switches (check energy requirements, add only for other benched pokemon)
+    	if (!performedSwitch && p.retreatCost <= f.pkmnSlots[0].getEnergyCount()) {
+    		for (int i = 1; i < f.pkmnSlots.length; i++) {
+    			if (f.pkmnSlots[i] != null) commands.add("switch " + i);
+    		}
+    	}
+    	
+    	return commands;
+    }
+    
+    //Get only valid attack commands
+    public ArrayList<String> getAllAttackMoves(boolean playerOne) {
+    	ArrayList<String> commands = new ArrayList<String>();
+    	Field f = playerOne ? playerOneF : playerTwoF;
+    	Pokemon p = f.pkmnSlots[0].getPokemon();
+    	
+    	//Attacks: check energy requirements before adding the command
+        if ( Util.hasSufficientEnergy( f.pkmnSlots[0].determineEnergy(), p.getAttackCost(1) ) ) commands.add("attack 1");
+        if ( Util.hasSufficientEnergy( f.pkmnSlots[0].determineEnergy(), p.getAttackCost(2) ) ) commands.add("attack 2");
+        
+        return commands;
+    }
+    
+    //Get only valid play commands
+    public ArrayList<String> getAllPlayMoves(boolean playerOne) {
+    	ArrayList<String> commands = new ArrayList<String>();
+    	Field f = playerOne ? playerOneF : playerTwoF;
+    	Pokemon p = f.pkmnSlots[0].getPokemon();
+    	
+    	//Play card
     	for (int i = 0; i < f.handCount; i++) {
     		Card c = f.hand.get(i);
     		if (c instanceof Energy && !playedEnergy) {
         		for (int j = 0; j < f.pkmnSlots.length; j++) {
-        			if (f.pkmnSlots[j] != null) commands.add("play " + i + " " + c.name);
+        			if (f.pkmnSlots[j] != null) commands.add("play " + j + " " + c.name);
         		}
     		} else if (c instanceof Trainer) {
     			Trainer t = (Trainer)c;
@@ -428,7 +526,7 @@ public class State {
     					commands.add("play 0 " + c.name);
     				} else {
     					for (int j = 0; j < f.pkmnSlots.length; j++) {
-    	        			if (f.pkmnSlots[j] != null) commands.add("play " + i + " " + c.name);
+    	        			if (f.pkmnSlots[j] != null) commands.add("play " + j + " " + c.name);
     	        		}
     				}
     			}
@@ -439,14 +537,58 @@ public class State {
     			} else if ( !p2.isBasic() ) {
     				for (int j = 0; j < f.pkmnSlots.length; j++) {
     					//Check if the Pokemon can be evolved
-    					if (f.pkmnSlots[j] != null && f.pkmnSlots[j].canEvolveWith(p2, turnCount)) commands.add("play " + i + " " + c.name);
+    					if (f.pkmnSlots[j] != null && f.pkmnSlots[j].canEvolveWith(p2, turnCount)) commands.add("play " + j + " " + c.name);
+    				}
+    			}
+    		}
+    	}
+    	
+    	return commands;
+    }
+    
+    /**
+     * Generate a list of possible moves for the given player
+     * @param playerOne The current player
+     * @return List of moves
+     */
+    public ArrayList<String> getAllMoves(boolean playerOne) {
+    	ArrayList<String> commands = new ArrayList<String>();
+    	Field f = playerOne ? playerOneF : playerTwoF;
+    	Pokemon p = f.pkmnSlots[0].getPokemon();
+    	
+    	//Play card
+    	for (int i = 0; i < f.handCount; i++) {
+    		Card c = f.hand.get(i);
+    		if (c instanceof Energy && !playedEnergy) {
+        		for (int j = 0; j < f.pkmnSlots.length; j++) {
+        			if (f.pkmnSlots[j] != null) commands.add("play " + j + " " + c.name);
+        		}
+    		} else if (c instanceof Trainer) {
+    			Trainer t = (Trainer)c;
+    			if (!(t.isSupporter && playedSupporter)) {
+    				if (!t.targetsPokemon) {
+    					commands.add("play 0 " + c.name);
+    				} else {
+    					for (int j = 0; j < f.pkmnSlots.length; j++) {
+    	        			if (f.pkmnSlots[j] != null) commands.add("play " + j + " " + c.name);
+    	        		}
+    				}
+    			}
+    		} else if (c instanceof Pokemon) {
+    			Pokemon p2 = (Pokemon)c;
+    			if ( p2.isBasic() && (f.pkmnCount < f.pkmnSlots.length) ) {
+    				commands.add("play 0 " + p2.name);
+    			} else if ( !p2.isBasic() ) {
+    				for (int j = 0; j < f.pkmnSlots.length; j++) {
+    					//Check if the Pokemon can be evolved
+    					if (f.pkmnSlots[j] != null && f.pkmnSlots[j].canEvolveWith(p2, turnCount)) commands.add("play " + j + " " + c.name);
     				}
     			}
     		}
     	}
     	
     	//Switches (check energy requirements, add only for other benched pokemon)
-    	if (!performedSwitch && p.retreatCost > f.pkmnSlots[0].getEnergyCount()) {
+    	if (!performedSwitch && p.retreatCost <= f.pkmnSlots[0].getEnergyCount()) {
     		for (int i = 1; i < f.pkmnSlots.length; i++) {
     			if (f.pkmnSlots[i] != null) commands.add("switch " + i);
     		}

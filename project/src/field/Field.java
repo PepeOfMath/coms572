@@ -212,7 +212,7 @@ public class Field {
     public boolean playEvolvPkmn(String name, int slotNum) {
         if(pkmnSlots[slotNum] == null) return false; //No Pokemon to Evolve
         Pokemon p = (Pokemon)findCardByName(name);
-        System.out.println(p);
+        //System.out.println(p);
         boolean result = pkmnSlots[slotNum].evolveWith(p, turnCount);
         if (result) {
             hand.remove(p);
