@@ -8,7 +8,7 @@ import cards.*;
 
 
 //This will be a very simple agent, choosing moves randomly after the initial setup
-public class RandomPlAI extends AI{
+public class RandomPlAI implements AI {
 
     private Random r;
     

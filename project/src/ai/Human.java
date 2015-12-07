@@ -8,7 +8,7 @@ import field.State;
  * Requests user input to handle actions
  *
  */
-public class Human extends AI {
+public class Human implements AI {
 	
 	Scanner scan;
 	
