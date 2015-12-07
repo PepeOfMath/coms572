@@ -80,53 +80,42 @@ public class Main {
             
             String toPlay = "";
             boolean canEnd = false;
-            if(true /*cpuControl1*/) {
-	            Util.printBlock("Player 1: Choose Basic Pokemon To Begin");
-	            Util.printBlock("Enter one Pokemon Name at a Time; Use \"done\" to finish");
-	            game.printHand(true);
-	            while(!toPlay.toLowerCase().equals("done")) {
-	            	Util.prompt(true);
-	                while(!s.hasNextLine());
-	                toPlay = s.nextLine().trim();
-	                //interpret and attempt to play cards
-	                boolean success = game.playBasicPkmn(true, toPlay);
-	                if(success) {
-	                    canEnd = true;
-	                } else if (!canEnd || !toPlay.toLowerCase().equals("done")) {
-	                    toPlay = "";
-	                    Util.printBlock("Invalid Choice - No Card Played");
-	                }
-	            }
-            } else {
-            	//TODO have AI choose Pokemon
-            	Util.printBlock("TODO: AI Selects Basic Pokemon");
+            Util.printBlock("Player 1: Choose Basic Pokemon To Begin");
+            Util.printBlock("Enter one Pokemon Name at a Time; Use \"done\" to finish");
+            game.printHand(true);
+            while(!toPlay.toLowerCase().equals("done")) {
+            	Util.prompt(true);
+            	toPlay = agentOne.chooseStartingPokemon(game);
+                //interpret and attempt to play cards
+                boolean success = game.playBasicPkmn(true, toPlay);
+                if(success) {
+                    canEnd = true;
+                } else if (!canEnd || !toPlay.toLowerCase().equals("done")) {
+                    toPlay = "";
+                    Util.printBlock("Invalid Choice - No Card Played");
+                }
             }
             
             //TODO (high priority)
             //Idea: probably use heuristics here to choose 1-3 starting pokemon based on the hand
-            if(true /*cpuControl2*/) {//TODO switch condition when ready
-            	Util.printBlock("Player 2: Choose Basic Pokemon To Begin");
-                Util.printBlock("Enter one Pokemon Name at a Time; Use \"done\" to finish");
-                game.printHand(false);
-                toPlay = "";
-                canEnd = false;
-                while(!toPlay.toLowerCase().equals("done")) {
-                	Util.prompt(false);
-                    while(!s.hasNextLine());
-                    toPlay = s.nextLine().trim();
-                    //interpret and attempt to play cards
-                    boolean success = game.playBasicPkmn(false, toPlay);
-                    if(success) {
-                        canEnd = true;
-                    } else if (!canEnd || !toPlay.toLowerCase().equals("done")) {
-                        toPlay = "";
-                        Util.printBlock("Invalid Choice - No Card Played");
-                    }
+        	Util.printBlock("Player 2: Choose Basic Pokemon To Begin");
+            Util.printBlock("Enter one Pokemon Name at a Time; Use \"done\" to finish");
+            game.printHand(false);
+            toPlay = "";
+            canEnd = false;
+            while(!toPlay.toLowerCase().equals("done")) {
+            	Util.prompt(false);
+                toPlay = agentTwo.chooseStartingPokemon(game);
+                //interpret and attempt to play cards
+                boolean success = game.playBasicPkmn(false, toPlay);
+                if(success) {
+                    canEnd = true;
+                } else if (!canEnd || !toPlay.toLowerCase().equals("done")) {
+                    toPlay = "";
+                    Util.printBlock("Invalid Choice - No Card Played");
                 }
-            } else {
-                //TODO have AI choose pokemon
-            	Util.printBlock("TODO: AI Selects Basic Pokemon");
             }
+
             
             
             //Now Player One begins by drawing a Card, which should not fail
@@ -178,7 +167,7 @@ public class Main {
                 if (!Util.validateCommand(cmd)) cmd = ""; //Makes it clearly invalid so no errors occur
                 
                 game.handleCommand(cmd, false); //Silent is false so the user receives all extra info
-                contin = !game.gameOver;
+                contin = !game.isGameOver();
                 playerOne = game.playerOneTurn;
             }
             
