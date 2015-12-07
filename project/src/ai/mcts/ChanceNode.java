@@ -25,7 +25,7 @@ public class ChanceNode extends AbstractTreeNode {
 		HashMap<State, Integer> stateCount = new HashMap<State, Integer>();
 		int tries = 20;
 		for(int i = 0; i < tries; i++) {
-			State next = new State(state, false); // TODO - which one? 
+			State next = new State(state, true); // TODO - which one? 
 			next.handleCommand(move, true);
 			if (stateCount.containsKey(next)) {
 				stateCount.put(next, stateCount.get(next) + 1);

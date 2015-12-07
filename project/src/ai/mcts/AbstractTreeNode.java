@@ -47,8 +47,8 @@ public abstract class AbstractTreeNode implements TreeNode {
 		}
 		
 		// TODO - heuristic maybe
-		if (cur.isDraw()) return 0; 
+		if (cur.isDraw()) return .5; 
 		if (Util.PLAYER_ONE_WIN == cur.getGameResult() && player || Util.PLAYER_TWO_WIN == cur.getGameResult() && !player) return 1;
-		return -1;
+		return 0;
 	}
 }

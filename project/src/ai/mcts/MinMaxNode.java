@@ -24,7 +24,9 @@ public class MinMaxNode extends AbstractTreeNode {
 	public MinMaxNode(State s, String a, boolean p) {
 		super(s,a,p);
 		expandedChildren = new ArrayList<TreeNode>();
+		
 		unexpandedActions = state.getAllMoves();
+		if (state.isGameOver()) unexpandedActions = new ArrayList<String>();
 		wins = 0.0;
 		player = p;
 	}
@@ -43,7 +45,10 @@ public class MinMaxNode extends AbstractTreeNode {
 			// TODO : use heuristic?
             double value = child.value()
                     + C * Math.sqrt(Math.log(this.simulations()) / child.simulations());
-                    
+            
+//            System.out.println(this.simulations);
+//            System.out.println(child.simulations());
+//            System.out.println(child.value());
             if (value > v) {
                 v = value;
                 best = child;
@@ -93,12 +98,14 @@ public class MinMaxNode extends AbstractTreeNode {
 		State s = gameState();
 		String move = unexpandedActions.remove(0);
 		ChanceNode child = new ChanceNode(s, move, player);
+		expandedChildren.add(child);
 		return child;
 	}
 
 
 	@Override
 	public double value() {
+		if (simulations == 0) return 0;
 		return wins / simulations;
 	}
 }
