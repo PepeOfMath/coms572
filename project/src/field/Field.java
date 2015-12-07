@@ -71,12 +71,14 @@ public class Field {
 	@SuppressWarnings("unchecked")
 	public Field(Field f, boolean exactCopy, boolean keepHand) {
     	//duplicate pkmnSlots, discard, unseenOp, deckCount, handCount, prizeCount, pkmnCount
-    	discard = (ArrayList<Card>)f.discard.clone();
-    	unseenOp = (ArrayList<Card>)f.unseenOp.clone();
+    	discard = new ArrayList<Card>(f.discard);//(ArrayList<Card>)f.discard.clone();
+    	unseenOp = new ArrayList<Card>(f.unseenOp);//(ArrayList<Card>)f.unseenOp.clone();
     	deckCount = f.deckCount;
     	handCount = f.handCount;
     	prizeCount = f.prizeCount;
     	pkmnCount = f.pkmnCount;
+    	
+    	turnCount = f.turnCount;
     	
     	//copy Pokemon slots
     	pkmnSlots = new Position[6];
@@ -90,14 +92,14 @@ public class Field {
     	//copy the deck, hand, prizes as needed, configure unseenMe
 		if(exactCopy) {
 			//Duplicate Everything
-			deck = (ArrayList<Card>)f.deck.clone();
-			hand = (ArrayList<Card>)f.hand.clone();
-			prizes = (ArrayList<Card>)f.prizes.clone();
-			unseenMe = (ArrayList<Card>)f.unseenMe.clone();
+			deck = new ArrayList<Card>(f.deck);//(ArrayList<Card>)f.deck.clone();
+			hand = new ArrayList<Card>(f.hand);//(ArrayList<Card>)f.hand.clone();
+			prizes = new ArrayList<Card>(f.prizes);//(ArrayList<Card>)f.prizes.clone();
+			unseenMe = new ArrayList<Card>(f.unseenMe);//(ArrayList<Card>)f.unseenMe.clone();
 		} else {
 			if (keepHand) {
-				hand = (ArrayList<Card>)f.hand.clone();
-				unseenMe = (ArrayList<Card>)f.unseenMe.clone();
+				hand = new ArrayList<Card>(f.hand);//(ArrayList<Card>)f.hand.clone();
+				unseenMe = new ArrayList<Card>(f.unseenMe);//(ArrayList<Card>)f.unseenMe.clone();
 				Collections.shuffle(unseenMe);
 				
 				//Just redraw the deck and prizes
@@ -124,11 +126,10 @@ public class Field {
 				}
 				for (int i = prizeCount; i < prizeCount+handCount; i++) {
 					hand.add( unseenOp.get(i) );
-					unseenMe.add( unseenOp.get(i) );
 				}
 				for (int i = prizeCount+handCount; i < unseenOp.size(); i++) {
 					deck.add( unseenOp.get(i) );
-					deck.add( unseenOp.get(i) );
+					unseenMe.add( unseenOp.get(i) );
 				}
 			}
 		}

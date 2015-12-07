@@ -17,25 +17,26 @@ public class RandomPlAI implements AI {
         r = new Random();
     }
     
-    
-    public String chooseStartingPokemon(State s) {
+    public String chooseStartingPokemon(State s, boolean playerOne) {
     	ArrayList<String> cmds = new ArrayList<String>();
-        Field f = s.playerOneTurn ? s.playerOneF : s.playerTwoF;
+        Field f = playerOne ? s.playerOneF : s.playerTwoF;
         for (int i = 0; i < f.handCount; i++) {
         	Card c = f.hand.get(i);
         	if ( (c instanceof Pokemon) && ((Pokemon)c).isBasic() ) cmds.add(c.name);
         }
+        
+        if (cmds.size() == 0) return "done";
         return cmds.get( r.nextInt(cmds.size()) );
     }
     
     //Choose a random action
     public String chooseAction(State s) {
-    	ArrayList<String> cmds;
+    	ArrayList<String> cmds = s.getAllMoves();
     	
     	double value = r.nextDouble();
-    	if (value < 0.05) {
+    	if (value < 0.03) {
     		return "end turn";
-    	} else if (value < 0.2) {
+    	} else if (value < 0.15) {
     		cmds = s.getAllSwitchMoves();
     		return (cmds.size() == 0) ? chooseAction(s) : cmds.get( r.nextInt(cmds.size()) );
     	} else if (value < 0.4) {

@@ -5,7 +5,8 @@ import field.*;
 public interface AI {
 
 
-    public String chooseStartingPokemon(State s);
+	//Need the playerOne boolean since the turn will not switch
+    public String chooseStartingPokemon(State s, boolean playerOne);
     
     public String chooseAction(State s);
 }

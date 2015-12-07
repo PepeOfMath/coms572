@@ -85,7 +85,7 @@ public class Main {
             game.printHand(true);
             while(!toPlay.toLowerCase().equals("done")) {
             	Util.prompt(true);
-            	toPlay = agentOne.chooseStartingPokemon(game);
+            	toPlay = agentOne.chooseStartingPokemon(game, true);
                 //interpret and attempt to play cards
                 boolean success = game.playBasicPkmn(true, toPlay);
                 if(success) {
@@ -105,7 +105,7 @@ public class Main {
             canEnd = false;
             while(!toPlay.toLowerCase().equals("done")) {
             	Util.prompt(false);
-                toPlay = agentTwo.chooseStartingPokemon(game);
+                toPlay = agentTwo.chooseStartingPokemon(game, false);
                 //interpret and attempt to play cards
                 boolean success = game.playBasicPkmn(false, toPlay);
                 if(success) {
@@ -138,24 +138,25 @@ public class Main {
                  */
                 //Maybe print game state before each action
             	Util.printBlock("CURRENT GAME STATE");
-                game.printState(playerOne, (playerOne && cpuControl1) || (!playerOne && cpuControl2));
-                
+                //game.printState(playerOne, (playerOne && cpuControl1) || (!playerOne && cpuControl2));
+                game.printState(playerOne, true);
+            	
                 Util.prompt(playerOne);
                 if (playerOne) {
+                	//cmd = agentOne.chooseAction(game);
                 	cmd = agentOne.chooseAction(new State(game, false));
                 	
                 	if (!cpuControl1) {
-                		Util.printBlock("TODO: ask AI for action");
                 		//Display the command and insert a pause
                         System.out.print(cmd);
                         while(!s.hasNextLine());
                         s.nextLine();
                 	}
                 } else {
-                	cmd = agentTwo.chooseAction(new State(game, false));
+                	cmd = agentTwo.chooseAction(game);
+                	//cmd = agentTwo.chooseAction(new State(game, false));
                 	
                 	if (!cpuControl2) {
-                		Util.printBlock("TODO: ask AI for action");
                 		//Display the command and insert a pause
                         System.out.print(cmd);
                         while(!s.hasNextLine());

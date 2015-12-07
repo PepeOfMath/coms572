@@ -17,7 +17,7 @@ public class Human implements AI {
 	}
 
 	@Override
-	public String chooseStartingPokemon(State s) {
+	public String chooseStartingPokemon(State s, boolean playerOne) {
 		while(!scan.hasNextLine());
         return scan.nextLine().trim();
 	}

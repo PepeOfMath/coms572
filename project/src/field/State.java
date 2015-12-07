@@ -65,6 +65,7 @@ public class State {
     	//If not,
     	//For the current player, we copy the hand,discard exactly, and reshuffle/get the deck,prizes
         //For the opponent, we copy discard exactly, and reshuffle/get the deck,hand,prizes
+    	playerOneTurn = s.playerOneTurn;
     	playerOneF = new Field(s.playerOneF, exactCopy, playerOneTurn);
     	playerTwoF = new Field(s.playerTwoF, exactCopy, !playerOneTurn);
     		
@@ -74,8 +75,8 @@ public class State {
     	playedSupporter = s.playedSupporter;
     	performedSwitch = s.performedSwitch;
     	
-    	playerOneTurn = s.playerOneTurn;
     	gameOver = s.gameOver;
+    	winner = s.winner;
     }
     
     /**
