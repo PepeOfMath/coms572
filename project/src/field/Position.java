@@ -111,6 +111,28 @@ public class Position {
         return energy;
     }
     
+    public int remainingHP() {
+    	return Math.max(0, getPokemon().totalHP - damage);
+    }
+    
+    //Get the maximum amount of energy that might be needed for an action (retreat or attack)
+    public int getMaxEnergyNeeds() {
+    	Pokemon p = getPokemon();
+    	
+    	int val = p.retreatCost;
+    	int total = 0;
+    	for (int i = 0; i < p.atkCostI.length; i++) {
+    		total += p.atkCostI[i];
+    	}
+    	val = Math.max(val, total);
+    	total = 0;
+    	for (int i = 0; i < p.atkCostII.length; i++) {
+    		total += p.atkCostII[i];
+    	}
+    	val = Math.max(val, total);
+    	return val;
+    }
+    
     //Apply damage. Return the actual amount done
     public int applyDamage(int d, Type t) {
         int damageToDo = d;

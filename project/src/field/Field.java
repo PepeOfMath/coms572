@@ -2,6 +2,8 @@ package field;
 
 import cards.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+
 import util.Util;
 import java.util.Random;
 import java.util.Collections;
@@ -371,5 +373,32 @@ public class Field {
             }
         }
         return false;
+    }
+    
+    public int evaluateField() {
+    	int combination = 0;
+    	int[] score = new int[pkmnSlots.length];
+    	for (int i = 0; i < pkmnSlots.length; i++) {
+    		if(pkmnSlots[i] == null) {
+    			score[i] = 0;
+    		} else {
+    			score[i] = 0;
+    			if (pkmnSlots[i].stat != Status.NORMAL) score[i] -= 50;
+    			score[i] += pkmnSlots[i].remainingHP();
+    			int subtotal = 0;
+    			if ( pkmnSlots[i].getPokemon().retreatCost <= pkmnSlots[i].getEnergyCount() ) subtotal += 20;
+    			if ( Util.hasSufficientEnergy( pkmnSlots[i].determineEnergy(), pkmnSlots[i].getPokemon().getAttackCost(1) ) ) subtotal += 20;
+    			if ( Util.hasSufficientEnergy( pkmnSlots[i].determineEnergy(), pkmnSlots[i].getPokemon().getAttackCost(2) ) ) subtotal += 30;
+    			if ( subtotal <= 20 ) {
+    				subtotal += 10*(pkmnSlots[i].getMaxEnergyNeeds()-pkmnSlots[i].getEnergyCount());
+    			}
+    			score[i] += subtotal;
+    		}
+    	}
+    	
+    	combination += 200*(6-prizeCount);
+    	Arrays.sort(score);
+    	combination += 0.8*score[0] + 0.8*score[1] + score[2] + score[3] + score[4] + 1.2*score[5]; //Lazily assuming 6 Positions.
+    	return combination;
     }
 }

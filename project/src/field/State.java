@@ -603,4 +603,11 @@ public class State {
     	
     	return commands;
     }
+    
+    //Score game from the perspective of the person whose turn it is
+    public int scoreGame() {
+    	Field f = playerOneTurn ? playerOneF : playerTwoF;
+    	Field f2 = playerOneTurn ? playerTwoF : playerOneF;
+    	return f.evaluateField() - f2.evaluateField();
+    }
 }
