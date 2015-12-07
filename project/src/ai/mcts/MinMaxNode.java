@@ -54,7 +54,7 @@ public class MinMaxNode extends AbstractTreeNode {
 
 	@Override
 	public boolean isLeaf() {
-		return state.gameOver;
+		return state.isGameOver();
 	}
 
 	@Override

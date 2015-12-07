@@ -2,9 +2,9 @@ package ai;
 
 import field.*;
 
-public abstract class AI {
+public interface AI {
 
-    public abstract String[] chooseStartingPokemon(State s);
+    public String[] chooseStartingPokemon(State s);
     
-    public abstract String chooseAction(State s);
+    public String chooseAction(State s);
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Random;
 
 import field.State;
+import util.Util;
 
 public abstract class AbstractTreeNode implements TreeNode {
 	protected String action; // How we got here (action from parent)
@@ -39,15 +40,15 @@ public abstract class AbstractTreeNode implements TreeNode {
 	public double rollOut() {
 		State cur = new State(gameState(), false);
 		
-		while (!cur.gameOver) {
+		while (!cur.isGameOver()) {
 			List<String> moves = cur.getAllMoves();
 			String move = moves.get(rand.nextInt(moves.size()));
 			cur.handleCommand(move, true);
 		}
 		
 		// TODO - heuristic maybe
-		if (cur.draw()) return 0; 
-		if (cur.winner() == player) return 1;
+		if (cur.isDraw()) return 0; 
+		if (Util.PLAYER_ONE_WIN == cur.getGameResult() && player || Util.PLAYER_TWO_WIN == cur.getGameResult() && !player) return 1;
 		return -1;
 	}
 }

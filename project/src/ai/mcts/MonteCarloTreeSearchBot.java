@@ -6,18 +6,19 @@ import java.util.List;
 import ai.AI;
 import field.State;
 
-public class MonteCarloTreeSearchBot extends AI {
+public class MonteCarloTreeSearchBot implements AI {
 	private static final long COMPUTE_TIME = 5000; 
 	private TreeNode curNode;
 	
 	@Override
-	public String[] chooseStartingPokemon(State s, boolean player) {
+	public String[] chooseStartingPokemon(State s) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String chooseAction(State s, boolean player) {
+	public String chooseAction(State s) {
+		boolean player = s.playerOneTurn;
 		curNode = findNode(curNode, s);
 
 		if (curNode == null) {
