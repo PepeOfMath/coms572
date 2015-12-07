@@ -11,7 +11,7 @@ public class MonteCarloTreeSearchBot implements AI {
 	private TreeNode curNode;
 	
 	@Override
-	public String[] chooseStartingPokemon(State s) {
+	public String chooseStartingPokemon(State s) {
 		// TODO Auto-generated method stub
 		return null;
 	}
