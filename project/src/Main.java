@@ -132,7 +132,7 @@ public class Main {
                 if (cpuPlayer && !cpuControl) {
                     //TODO (high priority) have AI choose an action
                 	Util.printBlock("TODO: ask AI for action");
-                    cmd = agent.chooseAction(new State(game, !cpuPlayer, false), !cpuPlayer);
+                    cmd = agent.chooseAction(new State(game, false));
                     
                     //Display the command and insert a pause
                     System.out.print(cmd);

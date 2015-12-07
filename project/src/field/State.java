@@ -58,13 +58,13 @@ public class State {
      * @param playerOne Which player is currently active
      * @param exactCopy Whether to create an exact copy, or a modified version for prediction purposes
      */
-    public State(State s, boolean playerOne, boolean exactCopy) {
+    public State(State s, boolean exactCopy) {
     	//If exactCopy, duplicate everything from the two Fields exactly
     	//If not,
     	//For the current player, we copy the hand,discard exactly, and reshuffle/get the deck,prizes
         //For the opponent, we copy discard exactly, and reshuffle/get the deck,hand,prizes
-    	playerOneF = new Field(s.playerOneF, exactCopy, playerOne);
-    	playerTwoF = new Field(s.playerTwoF, exactCopy, !playerOne);
+    	playerOneF = new Field(s.playerOneF, exactCopy, playerOneTurn);
+    	playerTwoF = new Field(s.playerTwoF, exactCopy, !playerOneTurn);
     		
     	//Copy other variables as well
     	turnCount = s.turnCount;
