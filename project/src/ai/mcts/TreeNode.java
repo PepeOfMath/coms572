@@ -12,14 +12,20 @@ public interface TreeNode {
 
 	public List<TreeNode> childNodes();
 
-	public int score();
-
 	public String action();
 
 	public int simulations();
 
-	public int wins();
-
 	public State gameState();
+
+	public TreeNode select();
+
+	public boolean hasUntriedMoves();
+
+	public TreeNode expand();
+
+	public double rollOut();
+
+	public double value();
 
 }
