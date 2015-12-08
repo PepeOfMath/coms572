@@ -31,7 +31,11 @@ public class RandomPlAI implements AI {
     
     //Choose a random action
     public String chooseAction(State s) {
-    	ArrayList<String> cmds = s.getAllMoves();
+    	ArrayList<String> cmds;//= s.getAllMoves();
+		//System.out.println("RandomPlAI Choosing from " + cmds.size() + " possible moves");
+		//for (int i = 0; i < cmds.size(); i++) {
+		//	System.out.println(cmds.get(i));
+		//}
     	
     	double value = r.nextDouble();
     	if (value < 0.03) {

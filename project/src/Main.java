@@ -1,5 +1,6 @@
 //A class to control the main program flow
 
+import java.util.ArrayList;
 import java.util.Scanner;
 import field.*;
 import util.*;
@@ -15,7 +16,7 @@ public class Main {
         boolean cpuControl1 = true;
         boolean cpuControl2 = true;
         String cmd;
-        AI agentOne = new RandomPlAI(); //Instantiate AI here
+        AI agentOne = new RandomSearchAI();//new RandomPlAI(); //Instantiate AI here
         AI agentTwo = new RandomPlAI();
         
         Util.printBlock("Press Enter to Begin");
@@ -144,6 +145,17 @@ public class Main {
                 Util.prompt(playerOne);
                 if (playerOne) {
                 	//cmd = agentOne.chooseAction(game);
+                	ArrayList<String> list = game.getAllMoves();
+                	Util.printBlock("All moves");
+                	for (int k = 0 ; k < list.size() ; k++) {
+                		System.out.println(list.get(k));
+                	}
+                	/*Util.printBlock("Recognized moves");
+                	State tmp = new State(game, false);
+                	list = tmp.getAllMoves();
+                	for (int k = 0; k < list.size(); k++) {
+                		System.out.println(list.get(k));
+                	}*/
                 	cmd = agentOne.chooseAction(new State(game, false));
                 	
                 	if (!cpuControl1) {

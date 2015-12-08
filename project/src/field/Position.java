@@ -59,6 +59,7 @@ public class Position {
     	if (canEvolveWith(p, newTurnNum)) {
             pkmn.add(p);
             turnPlayed = newTurnNum;
+            stat = Status.NORMAL; //status effects are healed with evolution
             return true;
         }
         return false;
@@ -66,7 +67,7 @@ public class Position {
     
     public boolean canEvolveWith(Pokemon p, int newTurnNum) {
     	if (turnPlayed == newTurnNum) return false; //Can't evolve the same turn a card is played
-    	if (this.getPokemon().name.equals(p.evolvesFrom)) return true;
+    	if (getPokemon().name.equals(p.evolvesFrom)) return true;
     	return false;
     }
     

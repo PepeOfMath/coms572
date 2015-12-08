@@ -19,7 +19,6 @@ public class Field {
     public int pkmnCount;
     
     public Position[] pkmnSlots;
-    public int turnCount;
     
     public ArrayList<Card> deck;
     public ArrayList<Card> hand;
@@ -28,8 +27,8 @@ public class Field {
     
     //May need another list of cards unseen by one or the other player
     //Will have to manage how to add and remove from these lists later
-    public ArrayList<Card> unseenMe; //unseen by this player (deck + prizes)
-    public ArrayList<Card> unseenOp; //unseen by the opponent(deck + prizes + hand)
+    private ArrayList<Card> unseenMe; //unseen by this player (deck + prizes)
+    private ArrayList<Card> unseenOp; //unseen by the opponent(deck + prizes + hand)
     
     
     /**
@@ -54,8 +53,6 @@ public class Field {
             unseenOp.add(deck.get(i));
         }
         
-        turnCount = 0;
-        
         deckCount = deck.size();
         handCount = 0;
         prizeCount= 0;
@@ -77,8 +74,6 @@ public class Field {
     	handCount = f.handCount;
     	prizeCount = f.prizeCount;
     	pkmnCount = f.pkmnCount;
-    	
-    	turnCount = f.turnCount;
     	
     	//copy Pokemon slots
     	pkmnSlots = new Position[6];
@@ -212,7 +207,7 @@ public class Field {
     
     //Return true if the card is successfully used to evolve a Pokemon
     //TODO: assumes this is a valid Evolved Pokemon to play
-    public boolean playEvolvPkmn(String name, int slotNum) {
+    public boolean playEvolvPkmn(String name, int slotNum, int turnCount) {
         if(pkmnSlots[slotNum] == null) return false; //No Pokemon to Evolve
         Pokemon p = (Pokemon)findCardByName(name);
         //System.out.println(p);
@@ -399,7 +394,7 @@ public class Field {
     	
     	combination += 200*(6-prizeCount);
     	Arrays.sort(score);
-    	combination += 0.8*score[0] + 0.8*score[1] + score[2] + score[3] + score[4] + 1.2*score[5]; //Lazily assuming 6 Positions.
+    	combination += 0.8*score[0] + 0.8*score[1] + score[2] + score[3] + score[4] + score[5]; //Lazily assuming 6 Positions.
     	return combination;
     }
 }
