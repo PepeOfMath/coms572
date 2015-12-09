@@ -4,3 +4,6 @@
 .recommenders/
 .project
 project/bin
+*.out
+*.log
+*.aux
