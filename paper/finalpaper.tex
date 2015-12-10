@@ -67,83 +67,65 @@
 \vskip 0.3in
 ]
 
-\begin{abstract} 
+\begin{abstract} % Done
 
 The Pokemon Trading Card Game is a popular turn-based card game usually played by two players. Its partially observable, stochastic, multi-agent nature combined with its complex rules, large state space, and demand for long-term planning make it an interesting target for modern artificial intelligence research efforts. An agent based on a Monte Carlo Tree Search (MCTS) algorithm with added knowledge via a heuristic function was developed and tested in games of PCG against human players and other agents. Although the MCTS agent performed well against random agents, its performance against human players was  worse than expected. Possible explanations for this performance gap are explored and suggestions for future research and technical enhancements are proposed.
 
 \end{abstract} 
 
-\section{Introduction}
-\label{Introduction}
+\section{Introduction} % Done
 The Pokemon Trading Card game has several characteristics that make it an interesting problem in artificially intelligent agent design. The general format and objective of the game, as well as its formal environment characterization and other important characteristics are summarized below.
 
-\subsection{Background: The Pokemon Trading Card Game}
+\subsection{Background: The Pokemon Trading Card Game} % Tyler C
 
 You have cards and play them and stuff
 
-\subsection{Summary: Game Environment}
+\subsection{Summary: Game Environment} % Tyler C
 
 It's partially observable and all that other junk
 It's got a large branching factor
 It requires long-term planning in an uncertain game tree
 
-\section{Methodology} 
+\section{Methodology} % Done
  
 In an effort to develop an agent which could play the Pokemon Card Game competently against human players, the developers implemented a custom state representation and game logic from scratch, then created an agent based on a Monte Carlo Tree Search (MCTS) and a well-tuned heuristic function. 
 
-\subsection{Game Logic and State Representation}
+\subsection{Game Logic and State Representation} % Tyler C
 
 We had some state and some game logic functions that looked like this. 
 
-\subsection{The Agent Program}
+\subsection{The Agent Program} % ME
+The Monte Carlo Tree Search algorithm was chosen as the basis of the Pokemon Card Game agent because the algorithm has seen wide success in a variety of related games such as Poker, Settlers of Catan, and the "Magic: The Gathering" card game. Furthermore, agents based on planning or rule-based approaches wouldn't be robust enough to create new strategies for brand new decks. The minimax algorithm also proves to be an undesirable candidate due to the partially observable and stochastic nature of the game environment as well as the large branching factor and need for long-term planning. The MCTS algorithm, on the other hand, has been applied to similar games and can be easily adapted to partially observable and stochastic environments. It also can exhibit long-term planning and works well in environments with a large branching factor, such as Go. 
 
-The paper title should be set in 14~point bold type and centered
-between two horizontal rules that are 1~point thick, with 1.0~inch
-between the top rule and the top edge of the page. Capitalize the
-first letter of content words and put the rest of the title in lower
-case.
+\subsubsection{Monte Carlo Tree Search Implementation Details} % ME
+A full description of the MCTS algorithm and its properties is left to previous research while a summary of the implementation used in the PCG agent is provided. 
+
+The MCTS algorithm works by building a search tree node-by-node and estimating the effectiveness of each node by simulating many games which visit that node and keeping track of the expectation of reward. 
+
+The MCTS agent developed for the PCG agent maintains a persistent game tree structure which is saved between turns. At the beginning of a turn, the current state is located in the current game tree and set as the new root node. In this way, results of simulations in previous turns can still provide information about the usefulness of nodes still under consideration. Next, the MCTS algorithm, consisting of Selection, Expansion, Simulation, and Back-propagation stages (described below) are repeated in a loop for up to five seconds. Each iteration may add up to one new node to the search tree and simulates one play-out to the end of the game. Usually, the PCG agent was able to complete 15,000 such iterations per turn on a consumer-grade laptop computer. Finally, the child of the root node with the highest computed value is chosen as the next action. 
+
+Typical MCTS implementations assume uniform node types, however the PCG bot employed a unique tree structure in order to account for the stochastic nature of actions at each step in game play. Namely, it is assumed that each action results in one or more possible states and the state which is actually reached is the result of random chance. Therefore, the game tree consists of alternating levels of min/max nodes and chance nodes. A min/max node seeks to maximize or minimize the value of its children, while chance nodes randomly result in one of their children.
+
+Each iteration of the MCTS algorithm consists of four stages as noted previously: Selection, Expansion, Simulation, and Back-propagation. The implementation of each stage is described below. 
+
+\textbf{Selection:} Starting from the root node, "optimal
+ children are selected recursively until a node which is a leaf node or a node which still has un-expanded children is encountered. When selecting children, one must be careful to balance the exploitation of nodes which are known to be favorable to the current player and nodes which have not been explored as much. To accomplish this goal, the Upper Confidence Bounds formula was used. Namely, at each step the child node which maximizes the following equation was chosen: $$v_i + C \times \sqrt{\frac{\ln N}{n_i}}$$ where $v_i$ is the value of the current node, 
 
 
-\subsubsection{Monte Carlo Tree Search Implementation}
-The paper title should be set in 14~point bold type and centered
-between two horizontal rules that are 1~point thick, with 1.0~inch
-between the top rule and the top edge of the page. Capitalize the
-first letter of content words and put the rest of the title in lower
-case.
 
-\subsubsection{Heuristic Function}
-The paper title should be set in 14~point bold type and centered
-between two horizontal rules that are 1~point thick, with 1.0~inch
-between the top rule and the top edge of the page. Capitalize the
-first letter of content words and put the rest of the title in lower
-case.
+\subsubsection{Heuristic Function} % Tyler C
+Describe the heuristic function here
 
-\section{Results}
-The paper title should be set in 14~point bold type and centered
-between two horizontal rules that are 1~point thick, with 1.0~inch
-between the top rule and the top edge of the page. Capitalize the
-first letter of content words and put the rest of the title in lower
-case.
+\section{Results} % Tyler C
+Some stuff about how we tested 
 
-\section{Conclusion}
-The paper title should be set in 14~point bold type and centered
-between two horizontal rules that are 1~point thick, with 1.0~inch
-between the top rule and the top edge of the page. Capitalize the
-first letter of content words and put the rest of the title in lower
-case.
-% Acknowledgements should only appear in the accepted version. 
-\section*{Acknowledgments} 
- 
-\textbf{Do not} include acknowledgements in the initial version of
-the paper submitted for blind review.
+\subsection{Test Results} % Tyler C
+Results vs random AI, observations vs humans
 
-If a paper is accepted, the final camera-ready version can (and
-probably should) include acknowledgements. In this case, please
-place such acknowledgements in an unnumbered section at the
-end of the paper. Typically, this will include thanks to reviewers
-who gave useful comments, to colleagues who contributed to the ideas, 
-and to funding agencies and corporate sponsors that provided financial 
-support.  
+\subsection{Explanations and Future Work} % ME
+
+
+\section{Conclusion} % ME
 
 
 % In the unusual situation where you want a paper to appear in the
