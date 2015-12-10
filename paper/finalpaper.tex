@@ -127,8 +127,12 @@ Each iteration of the MCTS algorithm consists of four stages as noted previously
 
 
 
-\subsubsection{Heuristic Function} % Tyler C
-Describe the heuristic function here
+\subsubsection{Heuristic Functions} % Tyler C
+Two different heuristics or metrics have been defined for this project.  The first heuristic helps an agent choose its initial set of in play Pokemon.  The second heuristic allows agents to assess roughly how desirable a particular non-terminal game state is, which is important since the game tree is large, and it is generally unreasonable to do a large number of searches which end in a terminal state.
+
+The first heuristic estimates the desirability of a particular basic Pokemon by examining its hit points and retreat cost.  A card is rated more favorably if it has lots of hit points, and a low retreat cost.  Roughly speaking, this implements the strategy that a good starting Pokemon should be strong, but also easily switched-out if needed.  There are certainly limitations to this fixed strategy.  For example, another strategy is to use a weak or high-retreat cost Pokemon as an initial sacrifice, while the player uses the extra time to strengthen their roster of other in play cards.  A more sophisticated heuristic might also take into account attack Energy costs, and what other cards the player or agent has in hand.
+
+The second heuristic evaluates game state.  This heuristic evaluates both halves of the state in the same way, and takes the difference of the scores for each player.  The result is a composite score, indicating a favorable set-up for player one when the score is large (and conversely, a large negative score is good for player two).  A single player's cards are evaluated with multiple measures.  Attributes resulting in a high (good) score include: high remaining hit points on in play Pokemon, good allocation of Energy cards, having more than one Pokemon in play (to avoid loss scenario two), and collecting prize cards.  Having an active Pokemon with a detrimental status such as "sleep", "poison", or "paralysis" is viewed as a negative.  Due to the large number of variables involved, it is challenging to weight these parameters appropriately in order to avoid accidentally promoting bad agent behavior.
 
 \section{Results} % Tyler C
 Some stuff about how we tested 
