@@ -75,57 +75,25 @@ The Pokemon Trading Card Game is a popular turn-based card game usually played b
 
 \section{Introduction}
 \label{Introduction}
-
-Submission to ICML 2015 will be entirely electronic, via a web site
-(not email).  Information about the submission process and \LaTeX\ templates
-are available on the conference web site at:
-
+The Pokemon Trading Card game has several characteristics that make it an interesting problem in artificially intelligent agent design. The general format and objective of the game, as well as its formal environment characterization and other important characteristics are summarized below.
 
 \subsection{Background: The Pokemon Trading Card Game}
 
-A better alternative is to use the \textbf{pdflatex} program instead of
-straight \LaTeX. This program avoids the Type-3 font problem, however you must
-ensure that all of the fonts are embedded (use {\tt pdffonts}). If they are
-not, you need to configure pdflatex to use a font map file that specifies that
-the fonts be embedded. Also you should ensure that images are not downsampled
-or otherwise compressed in a lossy way.
+You have cards and play them and stuff
 
-Note that the 2015 style files use the {\tt hyperref} package to
-make clickable links in documents.  If this causes problems for you,
-add {\tt nohyperref} as one of the options to the {\tt icml2015}
-usepackage statement.
+\subsection{Summary: Game Environment}
 
-\subsection{Summary: Game Environment Characterization}
-
-We will continue the ICML tradition in which the authors are given the
-option of providing a short reaction to the initial reviews. These
-reactions will be taken into account in the discussion among the
-reviewers and area chairs.
-
+It's partially observable and all that other junk
+It's got a large branching factor
+It requires long-term planning in an uncertain game tree
 
 \section{Methodology} 
  
-All submissions must follow the same format to ensure the printer can
-reproduce them without problems and to let readers more easily find
-the information that they desire.
+In an effort to develop an agent which could play the Pokemon Card Game competently against human players, the developers implemented a custom state representation and game logic from scratch, then created an agent based on a Monte Carlo Tree Search (MCTS) and a well-tuned heuristic function. 
 
 \subsection{Game Logic and State Representation}
 
-Papers must not exceed eight (8) pages, including all figures, tables,
-and appendices, but excluding references. When references are included,
-the paper must not exceed ten (10) pages. Any submission that exceeds 
-this page limit or that diverges significantly from the format specified 
-herein will be rejected without review.
-
-The text of the paper should be formatted in two columns, with an
-overall width of 6.75 inches, height of 9.0 inches, and 0.25 inches
-between the columns. The left margin should be 0.75 inches and the top
-margin 1.0 inch (2.54~cm). The right and bottom margins will depend on
-whether you print on US letter or A4 paper, but all final versions
-must be produced for US letter size.
-
-The paper body should be set in 10~point type with a vertical spacing
-of 11~points. Please use Times typeface throughout the text.
+We had some state and some game logic functions that looked like this. 
 
 \subsection{The Agent Program}
 
