@@ -104,7 +104,7 @@ In an effort to develop an agent which could play the Pokemon Card Game competen
 
 All code representing game logic and state representation was written in Java specifically for this project.  At any given point in time, the game state consists of a variety of information.  This includes which cards are in both players' hands, discard piles, and prizes, as well as the order of cards in each deck.  Each player can have up to six Pokemon in play, each with Energy attached.  There are also temporary or persistent attributes to keep track of, such as damage done to each Pokemon so far, status effects on active Pokemon, whether an Energy or Supporter Trainer card has been played in a given turn and so on.  Due to the large volume of information involved, the developers created a custom State data structure consisting of two identical objects representing the two players' cards, along with the previously mentioned attributes.  The State can be cloned for use in agent decision making.
 
-Cards are represented using a collection of 3 subclasses of the Card class: Energy, Trainer, and Pokemon.  A single card is created by reading from a plain-text database which stores vital details as a list of attributes with some shorthand effect notation.  For example, the Pokemon card "Hydreigon" has an attack called Consume.  This attack requires 1 Dark, and 2 colorless Energy to use, has a base damage of 40 and heals the active Pokemon by as much damage as it does to the opponent.  This attack is represented in the database as: $\texttt{1D2C,Consume,doDamage:40,healDamage:EQ}$.  This format was chosen to avoid needing to write a new class for every single card, the convenience of brevity, and the ability to define a single "effect handler" which can parse and interpret the effects of complex, multi-faceted attacks.
+Cards are represented using a collection of 3 subclasses of the Card class: Energy, Trainer, and Pokemon.  A single card is created by reading from a plain-text database which stores vital details as a list of attributes with some shorthand effect notation.  For example, the Pokemon card "Hydreigon" has an attack called Consume.  This attack requires 1 Dark, and 2 colorless Energy to use, has a base damage of 40 and heals the active Pokemon by as much damage as it does to the opponent.  This attack is represented in the database as: $\texttt{1D2C,Consume,doDamage:40,healDamage:EQ}$.  This format was chosen to avoid needing to write a new class for every single card, the convenience of brevity, and the ability to define a single "effect handler" which can parse and interpret the effects of complex, multi-faceted attacks.  Additionally, new cards can be quickly incorporated for a new deck, simply by modifying the database entries.
 
 At any given point in time, the code is also able to generate an exhaustive list of available commands.  The same text-based command syntax is shared between human plays (input via command line) and computer agents
 
@@ -135,16 +135,25 @@ The first heuristic estimates the desirability of a particular basic Pokemon by 
 The second heuristic evaluates game state.  This heuristic evaluates both halves of the state in the same way, and takes the difference of the scores for each player.  The result is a composite score, indicating a favorable set-up for player one when the score is large (and conversely, a large negative score is good for player two).  A single player's cards are evaluated with multiple measures.  Attributes resulting in a high (good) score include: high remaining hit points on in play Pokemon, good allocation of Energy cards, having more than one Pokemon in play (to avoid loss scenario two), and collecting prize cards.  Having an active Pokemon with a detrimental status such as "sleep", "poison", or "paralysis" is viewed as a negative.  Due to the large number of variables involved, it is challenging to weight these parameters appropriately in order to avoid accidentally promoting bad agent behavior.
 
 \section{Results} % Tyler C
-Some stuff about how we tested 
+Since the game interface supports play either by a human or computer agent, the project can be tested either by having a human player or by playing two different computer agents against each other.  All tests were performed with both players given the same deck of Pokemon cards to avoid unfair card advantages.
 
 \subsection{Test Results} % Tyler C
-Results vs random AI, observations vs humans
+Tests were performed on the Monte Carlo Tree Search agent both against a random-action choice agent and against human players.  Repeated trials indicate that the Monte Carlo-based agent consistently outperforms the random action agent.  However, against a human player the agent is not typically competitive.  While it does win the occasional game, the Monte Carlo Tree Search agent often struggles to find sequences of actions which can keep up with a typical person.  In particular, some actions which seem obvious to a human player (such as using the strongest attack) are not selected as frequently as expected.  This means that while the agent makes some good moves, it is unlikely to execute all the best actions in a given turn (though they may happen over several turns).  Increasing the search time might yield more effective move sequences.  Likewise, improvements in the heuristic might allow more accurate evaluation of partial rollouts, thus allowing the agent to search with more breadth.
 
-\subsection{Explanations and Future Work} % ME
+\subsection{Explanations and Future Work} % ME (TC: did some brainstorming)
+The code still experienced difficulties due to the large number of branches, and the fact that unobservable characteristics make it difficult to accurately carry out search in the game tree
 
+Our solution to non-observability was to clone the state such that all observable attributes are copied exactly, and all unobserved attributes are copied randomly (ex: simulated hand is drawn from the set of un-seen cards). An alternative, though perhaps more complicated approach would be to treat all card possibilities probabilistically, or simulate for more than one cloned state.  Either alternative would likely exacerbate time complexity issues.
+
+Fine tuning / improving the formula for the state evaluation heuristic 
+Using machine learning techniques and manual rating of states to "learn" a better heuristic
+Focus on smaller goals / planning (ex: what to do to evolve a Pokemon and give it three energies, while keeping it safe) rather than a constant focus on the end goal of collecting all prizes
+Rule-based approaches
 
 \section{Conclusion} % ME
-
+-Successfully created a system for human and computer agents to play the pokemon card game
+-Implemented an agent based on a well known strategy
+-Some success with the agent, but not as much as we'd like
 
 % In the unusual situation where you want a paper to appear in the
 % references without citing it in the main text, use \nocite

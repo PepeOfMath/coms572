@@ -1,6 +1,7 @@
 package ai;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 import cards.Card;
@@ -13,7 +14,7 @@ public class RandomSearchAI implements AI {
 	
 	private int pkmnCount = 0;
     private Random r;
-    private final int NUM_CHECKS = 20;
+    private final int NUM_CHECKS = 10;
     
     public RandomSearchAI() {
         super();
@@ -86,7 +87,8 @@ public class RandomSearchAI implements AI {
 		int bestScore = maximize ? Integer.MIN_VALUE : Integer.MAX_VALUE;
 		
 		ArrayList<String> cmds = s.getAllMoves();
-		for (int i = 0; i < cmds.size(); i++) {
+		Collections.shuffle(cmds);
+		for (int i = 0; i < cmds.size() && i < 8; i++) { //trying something where it is only allowed to search so many moves.  Also shuffle
 			State tmp = new State(s, true);
 	    	tmp.handleCommand(cmds.get(i), true);
 	    	int score;

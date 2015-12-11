@@ -5,6 +5,7 @@ import java.util.Scanner;
 import field.*;
 import util.*;
 import ai.*;
+import ai.mcts.MonteCarloTreeSearchBot;
 
 public class Main {
     
@@ -16,8 +17,8 @@ public class Main {
         boolean cpuControl1 = true;
         boolean cpuControl2 = true;
         String cmd;
-        AI agentOne = new RandomSearchAI();//new RandomPlAI(); //Instantiate AI here
-        AI agentTwo = new RandomPlAI();
+        AI agentOne = new RandomPlAI();//new RandomSearchAI(); //Instantiate AI here
+        AI agentTwo = new MonteCarloTreeSearchBot();//new RandomPlAI();
         
         Util.printBlock("Press Enter to Begin");
         while(!s.hasNextLine());
@@ -31,6 +32,7 @@ public class Main {
         	while(!s.hasNextLine());
             cmd = s.nextLine();
             if (cmd.toLowerCase().startsWith("y")) {
+            	agentOne = new RandomPlAI();
                 cpuControl1 = false;
                 Util.printBlock("Player 1 is CPU");
             } else {
@@ -45,6 +47,7 @@ public class Main {
             while(!s.hasNextLine());
             cmd = s.nextLine();
             if (cmd.toLowerCase().startsWith("y")) {
+            	agentTwo = new MonteCarloTreeSearchBot();
                 cpuControl2 = false;
                 Util.printBlock("Player 2 is CPU");
             } else {
@@ -128,6 +131,7 @@ public class Main {
             s.nextLine();
             
             boolean contin = true;
+            playerOne = true;
             while(contin) {
                 /*
                  * Current Actions:
@@ -141,38 +145,34 @@ public class Main {
             	Util.printBlock("CURRENT GAME STATE");
                 //game.printState(playerOne, (playerOne && cpuControl1) || (!playerOne && cpuControl2));
                 game.printState(playerOne, true);
-            	
-                Util.prompt(playerOne);
+                
+                ArrayList<String> list = game.getAllMoves();
+            	Util.printBlock("All moves");
+            	for (int k = 0 ; k < list.size() ; k++) {
+            		System.out.println(list.get(k));
+            	}
+            	Util.prompt(playerOne);
                 if (playerOne) {
                 	//cmd = agentOne.chooseAction(game);
-                	ArrayList<String> list = game.getAllMoves();
-                	Util.printBlock("All moves");
-                	for (int k = 0 ; k < list.size() ; k++) {
-                		System.out.println(list.get(k));
-                	}
-                	/*Util.printBlock("Recognized moves");
-                	State tmp = new State(game, false);
-                	list = tmp.getAllMoves();
-                	for (int k = 0; k < list.size(); k++) {
-                		System.out.println(list.get(k));
-                	}*/
                 	cmd = agentOne.chooseAction(new State(game, false));
                 	
                 	if (!cpuControl1) {
                 		//Display the command and insert a pause
-                        System.out.print(cmd);
-                        while(!s.hasNextLine());
-                        s.nextLine();
+                		System.out.println("");
+                        System.out.println(cmd);
+                        //while(!s.hasNextLine());
+                        //s.nextLine();
                 	}
                 } else {
-                	cmd = agentTwo.chooseAction(game);
-                	//cmd = agentTwo.chooseAction(new State(game, false));
+                	//cmd = agentTwo.chooseAction(game);
+                	cmd = agentTwo.chooseAction(new State(game, false));
                 	
                 	if (!cpuControl2) {
                 		//Display the command and insert a pause
-                        System.out.print(cmd);
-                        while(!s.hasNextLine());
-                        s.nextLine();
+                		System.out.println("");
+                        System.out.println(cmd);
+                        //while(!s.hasNextLine());
+                        //s.nextLine();
                 	}
                 }
                 

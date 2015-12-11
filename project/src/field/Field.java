@@ -392,9 +392,10 @@ public class Field {
     		}
     	}
     	
-    	combination += 200*(6-prizeCount);
+    	combination += 200*(6-prizeCount) + 1.2*score[0];
+    	score[0] = -500;
     	Arrays.sort(score);
-    	combination += 0.8*score[0] + 0.8*score[1] + score[2] + score[3] + score[4] + score[5]; //Lazily assuming 6 Positions.
+    	combination += 0.8*score[1] + 0.8*score[2] + score[3] + score[4] + score[5]; //Lazily assuming 6 Positions.
     	return combination;
     }
 }
