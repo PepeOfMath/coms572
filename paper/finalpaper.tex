@@ -156,10 +156,9 @@ The code still experienced difficulties due to the large number of branches, and
 
 Our solution to non-observability was to clone the state such that all observable attributes are copied exactly, and all unobserved attributes are copied randomly (ex: simulated hand is drawn from the set of un-seen cards). An alternative, though perhaps more complicated approach would be to treat all card possibilities probabilistically, or simulate for more than one cloned state.  Either alternative would likely exacerbate time complexity issues.
 
-Fine tuning / improving the formula for the state evaluation heuristic 
-Using machine learning techniques and manual rating of states to "learn" a better heuristic
-Focus on smaller goals / planning (ex: what to do to evolve a Pokemon and give it three energies, while keeping it safe) rather than a constant focus on the end goal of collecting all prizes
-Rule-based approaches
+One area of future work would be to fine tune the heuristic formula used in evaluating non-terminal states.  Additional testing and fine tuning might improve the results of decisions made from partial rollouts.  Alternatively, machine learning techniques might be used to construct a heuristic.  This would be done by generating a large number of potential game states and having a human observer rate their favorability for winning.
+
+Another possible area of study is to focus on smaller goals.  While the entire game space is too large and stochastic to search completely, it may be possible to efficiently seek a smaller goal.  These smaller goals might include "what to do to evolve a Pokemon and give it three energies?", or "what is the quickest way to defeat one of the opponent's Pokemon?".  These strategies would allow the agent to focus on a much more attainable goal which still moves it in the direction of winning the entire game.
 
 \section{Conclusion} % ME
 A system for simulating a game of the Pokemon Card Game was implemented which is capable of tracking the current game state, generating possible actions given a game state, and generating a new game state given a state and an action. Capability was added to allow humans to play against each other or against AI agents and to allow agents to play each other. 
