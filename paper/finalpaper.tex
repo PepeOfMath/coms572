@@ -152,9 +152,16 @@ Since the game interface supports play either by a human or computer agent, the 
 Tests were performed on the Monte Carlo Tree Search agent both against a random-action choice agent and against human players.  Repeated trials indicate that the Monte Carlo-based agent consistently outperforms the random action agent.  However, against a human player the agent is not typically competitive.  While it does win the occasional game, the Monte Carlo Tree Search agent often struggles to find sequences of actions which can keep up with a typical person.  In particular, some actions which seem obvious to a human player (such as using the strongest attack) are not selected as frequently as expected.  This means that while the agent makes some good moves, it is unlikely to execute all the best actions in a given turn (though they may happen over several turns).  Increasing the search time might yield more effective move sequences.  Likewise, improvements in the heuristic might allow more accurate evaluation of partial rollouts, thus allowing the agent to search with more breadth.
 
 \subsection{Explanations and Future Work} % ME (TC: did some brainstorming)
-The code still experienced difficulties due to the large number of branches, and the fact that unobservable characteristics make it difficult to accurately carry out search in the game tree
+The implemented agent performed worse than expected. The mostly likely explanations include implementation issues and inherent difficulties of the problem. 
 
-Our solution to non-observability was to clone the state such that all observable attributes are copied exactly, and all unobserved attributes are copied randomly (ex: simulated hand is drawn from the set of un-seen cards). An alternative, though perhaps more complicated approach would be to treat all card possibilities probabilistically, or simulate for more than one cloned state.  Either alternative would likely exacerbate time complexity issues.
+\textbf{Implementation Issues: } It may be the case that the implementation of Monte Carlo Tree Search contains logical errors which prevent the agent from consistently carrying out the MCTS algorithm. Namely, there are several areas that are likely to be particularly error-prone. 
+
+First of all, the proper treatment of min/max nodes was not made clear in any of the reviewed literature. The back-propagation step description never indicates special treatment of min/max nodes depending on whether they are a min or a max node, however logic suggests that min and max nodes should behave differently in back propagation such that min nodes should later select children with smaller scores more frequently. This distinction wasn't explicitly described in any tutorials or literature reviewed. 
+
+Second, our solution to partial observability involved cloning the state such that all observable attributes are copied exactly, and all unobserved attributes are copied randomly (ex: simulated hand is drawn from the set of un-seen cards). This code may also contain logical errors which prevent proper simulation of actions. Furthermore, it's unclear whether or not this is the proper treatment of partial observability. 
+
+\textbf{Large State Space: } It's also the case that the branching factor in Pokemon TCG is fairly large (around 10-30 usually). It might be the case that 5 seconds is not enough time for the MCTS algorithm to gather enough information about the value of child nodes to make the optimal decision. Improvements may be made by increasing the search time or finding ways to limit branching and shrink the state space. One may also consider imposing some structure on the game such as an ordering to the moves within a turn in order to limit the branching factor.
+
 
 Fine tuning / improving the formula for the state evaluation heuristic 
 Using machine learning techniques and manual rating of states to "learn" a better heuristic
@@ -162,11 +169,13 @@ Focus on smaller goals / planning (ex: what to do to evolve a Pokemon and give i
 Rule-based approaches
 
 \section{Conclusion} % ME
-A system for simulating a game of the Pokemon Card Game was implemented which is capable of tracking the current game state, generating possible actions given a game state, and generating a new game state given a state and an action. Capability was added to allow humans to play against each other or against AI agents and to allow agents to play each other. 
+A system for simulating a match of the Pokemon Trading Card Game was implemented which manages game state and generates available actions. The game interface also supports play by humans or computer agents.
 
-An agent based on Monte Carlo Tree Search was implemented, but it performed worse than expected. Possible explanations include implementation issues, state space complexity, inadequate computational power and time, 
+An agent based on Monte Carlo Tree Search was implemented, but it performed worse than expected. Possible explanations include implementation issues, state space complexity and inherent difficulties in problem domain, and inadequate computational power and time. 
 
 \section{Individual Contributions}%According to the project rules, we're supposed to discuss our individual contributions to the project.  Good catch anne
+\textbf{Tyler Chenhall: } Wrote code for representing and manipulating game state as well as the command line user interface for  playing and testing the game. Also wrote the random-move agent. 
+\textbf{Tyler Uhlenkamp: } Wrote and tested code for Monte Carlo Search Tree agent. 
 
 % In the unusual situation where you want a paper to appear in the
 % references without citing it in the main text, use \nocite
