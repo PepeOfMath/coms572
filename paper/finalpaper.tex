@@ -116,14 +116,24 @@ A full description of the MCTS algorithm and its properties is left to previous 
 
 The MCTS algorithm works by building a search tree node-by-node and estimating the effectiveness of each node by simulating many games which visit that node and keeping track of the expectation of reward. 
 
-The MCTS agent developed for the PCG agent maintains a persistent game tree structure which is saved between turns. At the beginning of a turn, the current state is located in the current game tree and set as the new root node. In this way, results of simulations in previous turns can still provide information about the usefulness of nodes still under consideration. Next, the MCTS algorithm, consisting of Selection, Expansion, Simulation, and Back-propagation stages (described below) are repeated in a loop for up to five seconds. Each iteration may add up to one new node to the search tree and simulates one play-out to the end of the game. Usually, the PCG agent was able to complete 15,000 such iterations per turn on a consumer-grade laptop computer. Finally, the child of the root node with the highest computed value is chosen as the next action. 
+The MCTS agent developed for the PCG agent maintains a persistent game tree structure which is saved between turns. At the beginning of a turn, the current state is located in the current game tree and set as the new root node. In this way, results of simulations in previous turns can still provide information about the usefulness of nodes still under consideration. Next, the MCTS algorithm, consisting of Selection, Expansion, Simulation, and Back-propagation stages (described below), is repeated in a loop for up to five seconds. Each iteration may add up to one new node to the search tree and simulates one play-out to the end of the game. Usually, the PCG agent was able to complete 15,000 such iterations per turn on a consumer-grade laptop computer. Finally, the child of the root node with the highest computed value is chosen as the next action. 
 
-Typical MCTS implementations assume uniform node types, however the PCG bot employed a unique tree structure in order to account for the stochastic nature of actions at each step in game play. Namely, it is assumed that each action results in one or more possible states and the state which is actually reached is the result of random chance. Therefore, the game tree consists of alternating levels of min/max nodes and chance nodes. A min/max node seeks to maximize or minimize the value of its children, while chance nodes randomly result in one of their children.
+Typical MCTS implementations assume uniform node types, however the PCG bot employed a unique tree structure in order to account for the stochastic nature of actions at each step in game play. Namely, it is assumed that each action results in one or more possible states and the state which is actually reached is the result of random chance. Therefore, the game tree consists of alternating levels of min/max nodes and chance nodes. A min/max node seeks to maximize or minimize the value of its children (depending on the current player, which is stored in the state), while chance nodes randomly result in one of their children.
 
 Each iteration of the MCTS algorithm consists of four stages as noted previously: Selection, Expansion, Simulation, and Back-propagation. The implementation of each stage is described below. 
 
 \textbf{Selection:} Starting from the root node, "optimal
- children are selected recursively until a node which is a leaf node or a node which still has un-expanded children is encountered. When selecting children, one must be careful to balance the exploitation of nodes which are known to be favorable to the current player and nodes which have not been explored as much. To accomplish this goal, the Upper Confidence Bounds formula was used. Namely, at each step the child node which maximizes the following equation was chosen: $$v_i + C \times \sqrt{\frac{\ln N}{n_i}}$$ where $v_i$ is the value of the current node, 
+ children are selected recursively until a node which is a leaf node or a node which still has un-expanded children is encountered. When selecting children, one must be careful to balance the exploitation of nodes which are known to be favorable to the current player and nodes which have not been explored as much. To accomplish this goal, the Upper Confidence Bounds for Trees (UCT) formula was used. Namely, at each step the child node which maximizes the following equation is chosen: $$v_i + C \times \sqrt{\frac{\ln N}{n_i}}$$ where $v_i$ is the value of the current node, C is a constant (chosen to be $\sqrt{2}$), $N$ is the number of simulations that visited the parent node, and $n_i$ is the number of simulations carried out which have visited the child node. 
+ 
+Experiments to incorporate the heuristic function into the Selection stage were attempted. Namely, the heuristic function was added as a factor in the UCT equation such that nodes with higher heuristic values would be more likely to be explored. Experiments showed this didn't significantly improve the performance of the agent.
+ 
+\textbf{Expansion: } If the selected node has unexpanded children (actions available from the given state which do not have corresponding child nodes), then a new node is added to the tree for that action. If the selected node is a min/max node, then a chance node is added for the given action. If the selected node is a chance node, then a new min/max node is created as one of its possible resulting states.
+
+\textbf{Simulation: } An entire game starting from the current node's game state is simulated. At each step, a random action is chosen until the game is in a terminal state. The result of the game is recorded.
+
+Other options for the Simulation step were attempted. Namely, terminating after a given number of steps and returning a heuristic value was tried and didn't improve the performance of the agent (as one might expect since more playouts could be conducted each turn).
+
+\textbf{Back-propagation: } Finally, the results of the simulation or play-out are propagated back up the path from the expanded or selected node to the root. The number of simulations of each node is incremented and the value of the node is modified based on the type of node. Chance nodes simply take on the weighted average of its child nodes (one of which has just been updated), while min and max nodes have their values increased or decreased depending on the game result and the type of node. 
 
 
 
@@ -151,9 +161,9 @@ Focus on smaller goals / planning (ex: what to do to evolve a Pokemon and give i
 Rule-based approaches
 
 \section{Conclusion} % ME
--Successfully created a system for human and computer agents to play the pokemon card game
--Implemented an agent based on a well known strategy
--Some success with the agent, but not as much as we'd like
+A system for simulating a game of the Pokemon Card Game was implemented which is capable of tracking the current game state, generating possible actions given a game state, and generating a new game state given a state and an action. Capability was added to allow humans to play against each other or against AI agents and to allow agents to play each other. 
+
+An agent based on Monte Carlo Tree Search was implemented, but it performed worse than expected. Possible explanations include implementation issues, state space complexity, inadequate computational power and time, 
 
 % In the unusual situation where you want a paper to appear in the
 % references without citing it in the main text, use \nocite
