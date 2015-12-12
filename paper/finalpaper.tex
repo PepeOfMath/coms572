@@ -151,7 +151,8 @@ Since the game interface supports play either by a human or computer agent, the 
 \subsection{Test Results} % Tyler C
 Tests were performed on the Monte Carlo Tree Search agent both against a random-action choice agent and against human players.  Repeated trials indicate that the Monte Carlo-based agent consistently outperforms the random action agent.  However, against a human player the agent is not typically competitive.  While it does win the occasional game, the Monte Carlo Tree Search agent often struggles to find sequences of actions which can keep up with a typical person.  In particular, some actions which seem obvious to a human player (such as using the strongest attack) are not selected as frequently as expected.  This means that while the agent makes some good moves, it is unlikely to execute all the best actions in a given turn (though they may happen over several turns).  Increasing the search time might yield more effective move sequences.  Likewise, improvements in the heuristic might allow more accurate evaluation of partial rollouts, thus allowing the agent to search with more breadth.
 
-\subsection{Explanations and Future Work} % ME (TC: did some brainstorming)
+\subsection{Explanations} % ME (TC: did some brainstorming)
+
 The implemented agent performed worse than expected. The mostly likely explanations include implementation issues and inherent difficulties of the problem. 
 
 \textbf{Implementation Issues: } It may be the case that the implementation of Monte Carlo Tree Search contains logical errors which prevent the agent from consistently carrying out the MCTS algorithm. Namely, there are several areas that are likely to be particularly error-prone. 
@@ -162,7 +163,7 @@ Second, our solution to partial observability involved cloning the state such th
 
 \textbf{Large State Space: } It's also the case that the branching factor in Pokemon TCG is fairly large (around 10-30 usually). It might be the case that 5 seconds is not enough time for the MCTS algorithm to gather enough information about the value of child nodes to make the optimal decision. Improvements may be made by increasing the search time or finding ways to limit branching and shrink the state space. One may also consider imposing some structure on the game such as an ordering to the moves within a turn in order to limit the branching factor.
 
-
+\subsection{Future Work}
 One area of future work would be to fine tune the heuristic formula used in evaluating non-terminal states.  Additional testing and fine tuning might improve the results of decisions made from partial rollouts.  Alternatively, machine learning techniques might be used to construct a heuristic.  This would be done by generating a large number of potential game states and having a human observer rate their favorability for winning.
 
 Another possible area of study is to focus on smaller goals.  While the entire game space is too large and stochastic to search completely, it may be possible to efficiently seek a smaller goal.  These smaller goals might include "what to do to evolve a Pokemon and give it three energies?", or "what is the quickest way to defeat one of the opponent's Pokemon?".  These strategies would allow the agent to focus on a much more attainable goal which still moves it in the direction of winning the entire game.
